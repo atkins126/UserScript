@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         知乎美化
-// @version      1.4.4
+// @version      1.4.9
 // @author       X.I.U
 // @description  宽屏显示、暗黑模式（4种）、暗黑模式跟随浏览器、屏蔽首页活动广告、隐藏文章开头大图、调整图片最大高度、向下翻时自动隐藏顶栏
 // @match        *://www.zhihu.com/*
@@ -14,7 +14,6 @@
 // @grant        GM_notification
 // @license      GPL-3.0 License
 // @run-at       document-start
-// @incompatible safari
 // @namespace    https://greasyfork.org/scripts/412212
 // @supportURL   https://github.com/XIU2/UserScript
 // @homepageURL  https://github.com/XIU2/UserScript
@@ -29,6 +28,7 @@
         ['menu_widescreenDisplaySearch', '搜索页、话题页、圈子', '宽屏显示', true],
         ['menu_widescreenDisplayCollection', '收藏页', '宽屏显示', true],
         ['menu_widescreenDisplayPost', '文章页', '宽屏显示', false],
+        ['menu_widescreenDisplayPeople', '用户主页', '用户主页', false],
         ['menu_widescreenDisplayWidth', '宽屏宽度', '宽屏宽度 (默认 1000)', '1000'],
         ['menu_darkMode', '暗黑模式', '暗黑模式', true],
         ['menu_darkModeType', '暗黑模式切换（1~4）', '暗黑模式切换', 1],
@@ -59,7 +59,7 @@
                 }
                 menu_ID[i] = GM_registerMenuCommand(`${menu_num(menu_ALL[i][3])} ${menu_ALL[i][1]}`, function(){menu_toggle(`${menu_ALL[i][3]}`,`${menu_ALL[i][0]}`)});
             } else if (menu_ALL[i][0] === 'menu_widescreenDisplay'){
-                    GM_registerMenuCommand(`#️⃣ ${menu_ALL[i][1]}`, function(){menu_setting('checkbox', menu_ALL[i][1], menu_ALL[i][2], true, [menu_ALL[i+1], menu_ALL[i+2], menu_ALL[i+3], menu_ALL[i+4], menu_ALL[i+5], menu_ALL[i+6]])});
+                    GM_registerMenuCommand(`#️⃣ ${menu_ALL[i][1]}`, function(){menu_setting('checkbox', menu_ALL[i][1], menu_ALL[i][2], true, [menu_ALL[i+1], menu_ALL[i+2], menu_ALL[i+3], menu_ALL[i+4], menu_ALL[i+5], menu_ALL[i+6], menu_ALL[i+7]])});
             } else if (menu_ALL[i][0].indexOf('menu_widescreenDisplay') === -1) {
                 menu_ID[i] = GM_registerMenuCommand(`${menu_ALL[i][3]?'✅':'❌'} ${menu_ALL[i][1]}`, function(){menu_switch(`${menu_ALL[i][3]}`,`${menu_ALL[i][0]}`,`${menu_ALL[i][2]}`)});
             }
@@ -175,8 +175,8 @@
     function addStyle() {
         let style = `/* 屏蔽登录提示（问题页中间的元素） */
 .Question-mainColumnLogin {display: none !important;}
-/* 屏蔽回答页广告 */
-.Pc-card.Card {display: none !important;}
+/* 屏蔽回答页/首页广告 */
+.Pc-card.Card, .Pc-Business-Card-PcTopFeedBanner {display: none !important;}
 /* 屏蔽文章页推荐文章 */
 .Recommendations-Main {display: none !important;}
 /* 解除盐选内容选中复制限制 */
@@ -221,6 +221,11 @@ html[data-theme="light"] .Button--primary.Button--blue {color: #fff !important;b
             style_widescreenDisplayPost = `/* 宽屏显示 - 文章页 */
 .Post-SideActions {left: calc(10vw) !important;}
 .Post-NormalMain .Post-Header, .Post-NormalMain>div, .Post-NormalSub>div {width: ${GM_getValue('menu_widescreenDisplayWidth')}px !important;}
+`,
+            style_widescreenDisplayPeople = `/* 宽屏显示 - 用户主页 */
+.Profile-mainColumn {width: inherit !important;}
+.Profile-sideColumn {display: none !important;}
+.Profile-main, #ProfileHeader {width: ${GM_getValue('menu_widescreenDisplayWidth')}px !important;}
 `,
             style_2 = `/* 隐藏在各列表中查看文章时开头显示的大图，不影响文章、专栏页面 */
 .RichContent img.ArticleItem-image {display: none !important;}
@@ -346,28 +351,30 @@ html[data-theme=dark] del a {color: #E91E63 !important;}
 html[data-theme=dark] div#zh-hovercard a {color: #353535 !important;}
             `,
             style_darkMode_2 = `/* 暗黑模式（方案 2） */
-html {filter: invert(80%) !important;}
-img, .ZVideoItem-video, .ZVideo-video {filter: invert(1) !important;}
+html {filter: invert(90%) !important; text-shadow: 0 0 0 !important;}
+html[data-theme=light] body.ZVideo-body {background-color: #fff;}
+img, .ZVideoItem-video, .ZVideo-video, .VideoAnswerPlayer-video {filter: invert(1) !important;}
 .GifPlayer img, .GifPlayer.isPlaying video {filter: invert(1) !important;}
 .GifPlayer.isPlaying img.ztext-gif.GifPlayer-gif2mp4Image, img[alt="[公式]"] {filter: none !important;}
 `,
             style_darkMode_2_firefox = `/* 暗黑模式（方案 2） */
-html {filter: invert(80%) !important; background-image: url();}
-img, .ZVideoItem-video, .ZVideo-video {filter: invert(1) !important;}
+html {filter: invert(90%) !important; background-image: url(); text-shadow: 0 0 0 !important;}
+html[data-theme=light] body.ZVideo-body {background-color: #fff;}
+img, .ZVideoItem-video, .ZVideo-video, .VideoAnswerPlayer-video {filter: invert(1) !important;}
 .GifPlayer img, .GifPlayer.isPlaying video {filter: invert(1) !important;}
 .GifPlayer.isPlaying img.ztext-gif.GifPlayer-gif2mp4Image {filter: none !important;}
 `,
             style_darkMode_3 = `/* 暗黑模式（方案 3） */
-html {filter: brightness(75%) !important;}
+html {filter: brightness(70%) !important;}
 `,
             style_darkMode_3_firefox = `/* 暗黑模式（方案 3） */
-html {filter: brightness(75%) !important; background-image: url();}
+html {filter: brightness(70%) !important; background-image: url();}
 `,
             style_darkMode_4 = `/* 暗黑模式（方案 4） */
-html {filter: brightness(75%) sepia(30%) !important;}
+html {filter: brightness(65%) sepia(30%) !important;}
 `,
              style_darkMode_4_firefox = `/* 暗黑模式（方案 4） */
-html {filter: brightness(75%) sepia(30%) !important; background-image: url();}
+html {filter: brightness(65%) sepia(30%) !important; background-image: url();}
 `
         let style_Add = document.createElement('style');
 
@@ -375,6 +382,13 @@ html {filter: brightness(75%) sepia(30%) !important; background-image: url();}
 
         // 如果开启了 [暗黑模式]
         if (menu_value('menu_darkMode')) {
+            // firefox 浏览器
+            if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
+                style_darkMode_2 = style_darkMode_2_firefox
+                style_darkMode_3 = style_darkMode_3_firefox
+                style_darkMode_4 = style_darkMode_4_firefox
+            }
+
             // 如果开启了 [暗黑模式跟随浏览器] 且 当前浏览器是暗黑模式
             if (menu_value('menu_darkModeAuto') && !window.matchMedia('(prefers-color-scheme: dark)').matches) {
                 // 如果是暗黑模式，则需要改为白天模式
@@ -396,11 +410,6 @@ html {filter: brightness(75%) sepia(30%) !important; background-image: url();}
                 } else { // 如果是其他暗黑模式，则需要确保为白天模式
                     if (getTheme() === 'dark') {
                         setTheme('light');
-                    }
-                    if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
-                        style_darkMode_2 = style_darkMode_2_firefox
-                        style_darkMode_3 = style_darkMode_3_firefox
-                        style_darkMode_4 = style_darkMode_4_firefox
                     }
                 }
                 switch(menu_value('menu_darkModeType')) {
@@ -425,6 +434,7 @@ html {filter: brightness(75%) sepia(30%) !important; background-image: url();}
         }
 
         if (location.pathname === '/' || location.pathname === '/hot' || location.pathname === '/follow') style += style_index;
+        if (menu_value('menu_darkModeType') === 1 && (location.pathname.indexOf('/special/') > -1 || location.pathname.indexOf('/pub/') > -1)) style += style_darkMode_2 + 'video {filter: invert(1) !important;}';
 
         // 宽屏显示
         if (menu_value('menu_widescreenDisplayIndex')) style += style_widescreenDisplayIndex;
@@ -432,6 +442,7 @@ html {filter: brightness(75%) sepia(30%) !important; background-image: url();}
         if (menu_value('menu_widescreenDisplaySearch') && (location.pathname === '/search' || location.pathname.indexOf('/club/') > -1 || location.pathname.indexOf('/topic/') > -1)) style += style_widescreenDisplaySearch;
         if (menu_value('menu_widescreenDisplayCollection') && location.pathname.indexOf('/collection/') > -1) style += style_widescreenDisplayCollection;
         if (menu_value('menu_widescreenDisplayPost') && location.hostname.indexOf('zhuanlan') > -1 && (location.pathname.indexOf('/edit') === -1 || location.pathname.indexOf('/write') === -1)) style += style_widescreenDisplayPost;
+        if (menu_value('menu_widescreenDisplayPeople') && location.pathname.indexOf('/people/') > -1) style += style_widescreenDisplayPeople;
 
         // 调整图片最大高度
         if (menu_value('menu_picHeight')) style += style_4;

@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         蓝奏云网盘增强
-// @version      1.3.7
+// @version      1.4.3
 // @author       X.I.U
-// @description  刷新不回根目录、后退返回上一级、右键文件显示菜单、点击直接下载文件、自动显示更多文件、自定义分享链接域名、自动打开/复制分享链接、带密码的分享链接自动输密码、拖入文件自动显示上传框、输入密码后回车确认、调整描述（话说）编辑框初始大小
+// @description  刷新不回根目录、快捷返回上一级（右键网页空白处）、后退返回上一级、右键文件显示菜单、点击直接下载文件、点击空白进入目录、自动显示更多文件、一键复制所有分享链接、自定义分享链接域名、自动打开/复制分享链接、带密码的分享链接自动输密码、拖入文件自动显示上传框、输入密码后回车确认、调整描述（话说）编辑框初始大小
 // @include      /^https:\/\/.+\.lanzou[a-z]\.com\/.*$/
 // @match        *://pan.lanzou.com/*
 // @match        *://lanzou.com/u
@@ -38,7 +38,7 @@
         ['menu_copy_fileSha', '自动复制分享链接', '自动复制分享链接', true],
         ['menu_refreshCorrection', '刷新不返回根目录', '刷新不返回根目录', true],
         ['menu_rightClickMenu', '右键文件显示菜单', '右键文件显示菜单', true],
-        ['menu_directDownload', '点击直接下载文件', '点击直接下载文件', true],
+        ['menu_directDownload', '点击直接下载文件 (分享链接列表页)', '点击直接下载文件', true],
         ['menu_folderDescdesMenu', '调整描述（话说）编辑框大小', '调整描述（话说）编辑框大小', true]
     ], menu_ID = [], lastFolderID;
     for (let i=0;i<menu_ALL.length;i++){ // 如果读取到的值为 null 就写入默认值
@@ -127,9 +127,12 @@
             setTimeout(hideSha, 500); //                 隐藏分享链接窗口（这样自动打开/复制分享链接时，不会一闪而过）
             fobiddenBack(); //                           禁止浏览器返回（并绑定新的返回事件）
             EventXMLHttpRequest(); //                    监听 XMLHttpRequest 事件并执行 [自动显示更多文件]
+            setTimeout(clickOpenDirectory, 500); //      点击空白进入目录
+            setTimeout(backToTop, 2000); //              快捷返回上级（右键点击 网页右侧/下方 空白处）
 
             dragEnter(); //                              拖入文件自动显示上传框
             setTimeout(viewTop,1000); //                 监听并修改右键菜单 [外链分享地址] 为 [复制并打开分享链接] / [复制分享链接] / [打开分享链接] 之一
+            setTimeout(copyAllfileSha, 500); //          一键复制所有分享链接
         }
     }
 
@@ -189,6 +192,17 @@
     }
 
 
+    // 点击空白进入目录
+    function clickOpenDirectory() {
+        mainframe.document.getElementById('sub_folder_list').onclick = function(e){
+            //console.log(e.target);
+            if (e.target.className && e.target.className == 'f_tb') {
+                e.target.querySelector('span.follink').click()
+            }
+        }
+    }
+
+
     // 右键文件显示菜单
     function rightClickMenu() {
         if (!menu_value('menu_rightClickMenu')) return
@@ -197,25 +211,24 @@
     }
 
 
-    // 右键文件显示菜单，参数：文件/文件夹列表 ID、菜单 ID 前缀
+    // 右键文件显示菜单，参数：文件/文件夹列表 ID、菜单 ID、菜单 ID前缀
     function rightClickMenu_(list_id_name, menu_id_name_prefix, list_id_name_prefix) {
         let list_ = mainframe.document.getElementById(list_id_name);
-        if (list_) { //                                          文件/文件夹列表
-            list_.oncontextmenu = function(e){
-                e.preventDefault(); //                           屏蔽浏览器自身右键菜单
-                let left = e.pageX - 30; //                      右键菜单弹出位置
-                let list_ID = e.target.id;
-                if (e.target.nodeName === 'FONT') {
-                    list_ID = e.target.parentNode.parentNode.id
-                } else if(e.target.id === '') {
-                    list_ID = e.target.parentNode.id
-                }
-                list_ID = /\d+/.exec(list_ID)
-                if(list_ID.length > 0){
-                    mainframe.document.getElementById(menu_id_name_prefix + list_ID[0]).style.cssText='position: absolute !important; left: ' + left + 'px;' // 修改右键菜单弹出位置（X）
-                    mainframe.document.getElementById(list_id_name_prefix + list_ID[0]).focus();
-                    mainframe.document.getElementById(list_id_name_prefix + list_ID[0]).click();
-                }
+        if (!list_) return //                                文件/文件夹列表
+        list_.oncontextmenu = function(e){
+            e.preventDefault(); //                           屏蔽浏览器自身右键菜单
+            let left = e.pageX - 30; //                      右键菜单弹出位置
+            let list_ID = e.target.id;
+            if (e.target.nodeName === 'FONT') {
+                list_ID = e.target.parentNode.parentNode.id
+            } else if(e.target.id === '') {
+                list_ID = e.target.parentNode.id
+            }
+            list_ID = /\d+/.exec(list_ID)
+            if(list_ID.length > 0){
+                mainframe.document.getElementById(menu_id_name_prefix + list_ID[0]).style.cssText='position: absolute !important; left: ' + left + 'px;' // 修改右键菜单弹出位置（X）
+                mainframe.document.getElementById(list_id_name_prefix + list_ID[0]).focus();
+                mainframe.document.getElementById(list_id_name_prefix + list_ID[0]).click();
             }
         }
     }
@@ -272,11 +285,18 @@
             iframe = iframe.contentWindow;
             let timer = setInterval(function(){
                 if (iframe.document.querySelector('#go a[href]')) {
+                    //iframe.document.querySelector('#go a[href]').target = '_top'
+                    //iframe.document.querySelector('#go a[href]').click();
                     GM_openInTab(iframe.document.querySelector('#go a[href]').href, {active: false, insert: true, setParent: false}); // 后台打开
-                    window.top.close(); // 关闭该后台标签页
                     clearInterval(timer);
+                    // 关闭该后台标签页
+                    if (GM_info.scriptHandler === 'Violentmonkey') { // Violentmonkey 需要延迟一会儿
+                        setTimeout(function(){window.top.close();}, 500)
+                    } else {
+                        window.top.close();
+                    }
                 }
-            }, 1);
+            }, 10);
         }
     }
 
@@ -334,6 +354,91 @@
     }
 
 
+    // 一键复制所有分享链接
+    function copyAllfileSha() {
+        var f_data = '', tmep_data = [];
+        let f_tp = mainframe.document.getElementById('f_tp');
+        //console.log(f_tp, mainframe.document.location.href)
+        f_tp.insertAdjacentHTML('afterend', `<a id="f_copyAll" class="f_sela" style="float: right; width: auto; font-size: 12px !important; font: inherit; padding: 2px 10px; margin-top: -25px;" title="获取所有分享链接需要一些时间（取决于有多少文件）。&#10;因为分享链接没有显示在网页上，需要通过网页接口获取，因此为了避免太频繁被限制，所以设置了 300ms 间隔时间！">一键复制所有分享链接</a>`);
+        mainframe.document.getElementById('f_copyAll').onclick = function() {
+            f_data = ''; tmep_data = [];
+            mainframe.document.querySelectorAll('.f_tb').forEach(function (_this) {
+                //console.log(_this, _this.id.indexOf('fol') > -1)
+                if (_this.id.indexOf('fol') > -1) {
+                    //console.log(`task=18&folder_id=${_this.id.replace('fol','')}`)
+                    tmep_data.push([`${_this.querySelector('span[id^="folname"]').textContent}`, `task=18&folder_id=${_this.id.replace('fol','')}`])
+                } else {
+                    //console.log(`task=22&file_id=${_this.id.replace('f','')}`)
+                    tmep_data.push([`${_this.querySelector('span[id^="filename"]').textContent}`, `task=22&file_id=${_this.id.replace('f','')}`])
+                }
+            })
+            //console.log(tmep_data)
+            if (tmep_data.length > 0) {
+                getUrl(0);
+                GM_notification({text: '获取所有分享链接需要一些时间（取决于有多少文件），在此期间请不要关闭网页！', timeout: 5000});
+            }
+        };
+
+
+        function getUrl(i) {
+            //console.log(i)
+            GM_xmlhttpRequest({
+                url: 'https://pc.woozooo.com/doupload.php',
+                method: 'POST',
+                data: tmep_data[i][1],
+                responseType: 'json',
+                overrideMimeType: 'application/json; charset=utf-8',
+                headers: {
+                    'Referer': mainframe.document.location.href,
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                },
+                timeout: 5000,
+                onload: function (response) {
+                    try {
+                        //console.log('返回内容：',response.response)
+                        if (response.response && response.response.zt === 1) {
+                            //console.log(response.response)
+                            if (response.response.info.f_id) {
+                                //console.log('文件 1',f_data)
+                                f_data += `${tmep_data[i][0]} `
+                                if (menu_value('menu_customFileSha')) {
+                                    f_data += `https://${menu_value('menu_customFileSha')}/${response.response.info.f_id} `
+                                } else {
+                                    f_data += `${response.response.info.is_newd}/${response.response.info.f_id} `
+                                }
+                                if (response.response.info.onof == '1') f_data += `密码:${response.response.info.pwd}`
+                                f_data += `\n`
+                                //console.log('文件 2',f_data)
+                            } else {
+                                //console.log('目录 1',f_data)
+                                f_data += `${response.response.info.name} `
+                                if (menu_value('menu_customFileSha')) {
+                                    f_data += `${response.response.info.new_url.replace(/\/\/.+\//i, '//' + menu_value('menu_customFileSha') + '/')} `
+                                } else {
+                                    f_data += `${response.response.info.new_url} `
+                                }
+                                if (response.response.info.onof == '1') f_data += `密码:${response.response.info.pwd}`
+                                f_data += `\n`
+                                //console.log('目录 2',f_data)
+                            }
+                            if (++i < tmep_data.length) {
+                                setTimeout(function(){getUrl(i);}, 300);
+                            } else {
+                                console.log(f_data)
+                                GM_setClipboard(f_data, 'text');
+                                GM_notification({text: '✅ 已复制所有文件/目录的分享链接到剪切板~', timeout: 2000});
+                            }
+                        } else {
+                            GM_notification({text: '❌ 更新失败，请联系作者解决...', timeout: 5000});
+                        }
+                    } catch (e) {
+                        console.log(e);
+                    }
+                }
+            })
+        }
+    }
+
     // 分享链接相关（点击文件时）
     function fileSha() {
         var f_sha = mainframe.document.getElementById('f_sha'); //                      寻找分享链接（下载链接）信息框
@@ -347,7 +452,7 @@
                 // 复制分享链接（并已复制的提示信息）
                 if (menu_value('menu_copy_fileSha')) {f_sha.style.display = 'none';GM_setClipboard(f_sha1.textContent, 'text');GM_notification({text: '已复制分享链接~', timeout: 2000});}
                 // 直接下载文件
-                if (menu_value('menu_directDownload')) {f_sha.style.display = 'none';GM_openInTab(f_sha1.textContent + '#download', {active: false,insert: true,setParent: true});}
+                //if (menu_value('menu_directDownload')) {f_sha.style.display = 'none';GM_openInTab(f_sha1.textContent + '#download', {active: false,insert: true,setParent: true});}
             }
         }
     }
@@ -417,6 +522,17 @@
     }
 
 
+    // 快捷返回上级（右键点击 网页右侧/下方 空白处）
+    function backToTop() {
+        mainframe.document.getElementById('container').oncontextmenu = mainframe.document.body.oncontextmenu = function(e){
+            if (e.target == this) {
+                e.preventDefault();
+                backEvent();
+            }
+        }
+    }
+
+
     // 监听 XMLHttpRequest 事件并执行
     function EventXMLHttpRequest() {
         var _send = mainframe.XMLHttpRequest.prototype.send
@@ -438,6 +554,7 @@
                 for (const target of mutation.addedNodes) {
                     if (target.nodeType != 1) return
                     if (target.className === 'f_view') {
+                        //console.log(target)
                         let f_viewtop = target.querySelector('.f_viewtop');
                         if (f_viewtop && f_viewtop.textContent === '外链分享地址') {
                             if (menu_value('menu_open_fileSha') && menu_value('menu_copy_fileSha')) {

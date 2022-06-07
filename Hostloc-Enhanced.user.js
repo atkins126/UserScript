@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         全球主机交流论坛增强
-// @version      1.4.1
+// @version      1.4.5
 // @author       X.I.U
-// @description  自动签到（访问空间 +22 积分）、屏蔽用户（黑名单）、屏蔽关键词（帖子标题）、回帖小尾巴、自动无缝翻页、快捷回到顶部（右键点击两侧空白处）、收起预览帖子（左键点击两侧空白处）、预览帖子快速回复带签名、显示是否在线、显示帖子内隐藏回复、屏蔽阅读权限 255 帖子
+// @description  自动签到（访问空间 +22 积分）、屏蔽用户（黑名单）、屏蔽关键词（帖子标题）、回帖小尾巴、自动无缝翻页、快捷回到顶部（右键网页两侧空白处）、收起预览帖子（左键网页两侧空白处）、屏蔽投票贴、屏蔽阅读权限 255 帖子、预览帖子快速回复带签名、显示是否在线、显示帖子内隐藏回复
 // @match        *://hostloc.com/*
-// @icon         https://www.hostloc.com/favicon.ico
+// @match        *://91ai.net/*
+// @icon         https://hostloc.com/favicon.ico
 // @grant        GM_xmlhttpRequest
 // @grant        GM_registerMenuCommand
 // @grant        GM_unregisterMenuCommand
@@ -12,6 +13,7 @@
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_notification
+// @grant        unsafeWindow
 // @license      GPL-3.0 License
 // @run-at       document-end
 // @namespace    https://greasyfork.org/scripts/414005
@@ -24,18 +26,14 @@
     var menu_ALL = [
         ['menu_autoSignIn', '自动签到（22 积分）', '自动签到', true],
         ['menu_reAutoSignIn', '重新签到', '重新签到', ''],
-        ['menu_blockUsers', '屏蔽用户', '屏蔽用户', false],
-        ['menu_customBlockUsers', '自定义屏蔽用户', '自定义屏蔽用户', []],
-        ['menu_blockKeywords', '屏蔽关键词（帖子标题）', '屏蔽关键词（帖子标题）', false],
-        ['menu_customBlockKeywords', '自定义屏蔽关键词', '自定义屏蔽关键词', []],
-        ['menu_customLittleTail', '自定义小尾巴内容', '自定义小尾巴内容', ''],
+        ['menu_customBlockUsers', '屏蔽用户（黑名单）', '屏蔽用户', []],
+        ['menu_customBlockKeywords', '屏蔽关键词（帖子标题）', '屏蔽关键词', []],
+        ['menu_customLittleTail', '回帖小尾巴', '回帖小尾巴', ''],
         ['menu_pageLoading', '自动无缝翻页（总开关）', '自动无缝翻页', true],
         ['menu_thread_pageLoading', '帖子内自动翻页', '帖子内自动翻页', true],
-        ['menu_backToTop', '快捷回到顶部（右键点击两侧空白处）', '快捷回到顶部', true],
-        ['menu_collapsedNowPost', '收起预览帖子（左键点击两侧空白处）', '收起预览帖子', true],
-        ['menu_onlineStatus', '显示是否在线', '显示是否在线', true],
-        ['menu_showhide', '显示帖子内隐藏回复', '显示帖子内隐藏回复', true],
-        ['menu_delate255', '屏蔽阅读权限 255 帖子', '屏蔽阅读权限 255 帖子', true]
+        ['menu_showhide', '显示帖内隐藏回复', '显示帖内隐藏回复', true],
+        ['menu_delate255', '屏蔽阅读权限 255 帖子', '屏蔽阅读权限 255 帖子', true],
+        ['menu_delatePolls', '屏蔽投票帖子', '屏蔽投票帖子', false]
     ], menu_ID = [];
     for (let i=0;i<menu_ALL.length;i++){ // 如果读取到的值为 null 就写入默认值
         if (GM_getValue(menu_ALL[i][0]) == null){GM_setValue(menu_ALL[i][0], menu_ALL[i][3])};
@@ -93,7 +91,7 @@
     if (document.getElementById('um')){
         loginStatus = true;
     } else {
-        loginStatus = getLoginStatus();
+        if (typeof discuz_uid != 'undefined') loginStatus = (discuz_uid != '0' ? true : false);
     }
 
     // 默认 ID 为 0
@@ -107,37 +105,37 @@
         thread: {
             SiteTypeID: 2,
             pager: {
-                nextLink: '//a[@class="nxt"][@href]',
-                pageElement: 'css;div#postlist > div[id^="post_"]',
-                HT_insert: ['css;div#postlist', 2],
-                replaceE: 'css;#ct > .pgs',
+                nextLink: 'a.nxt',
+                pageElement: 'div#postlist > div[id^="post_"]',
+                HT_insert: ['div#postlist', 2],
+                replaceE: '#ct > .pgs',
             }
         },
         search: {
             SiteTypeID: 3,
             pager: {
-                nextLink: '//a[@class="nxt"][@href]',
-                pageElement: 'css;div#threadlist > ul',
-                HT_insert: ['css;div#threadlist', 2],
-                replaceE: 'css;div.pg'
+                nextLink: 'a.nxt',
+                pageElement: 'div#threadlist > ul',
+                HT_insert: ['div#threadlist', 2],
+                replaceE: 'div.pg'
             }
         },
         guide: {
             SiteTypeID: 4,
             pager: {
-                nextLink: '//a[@class="nxt"][@href]',
-                pageElement: 'css;div#threadlist div.bm_c table > tbody',
-                HT_insert: ['css;div#threadlist div.bm_c table', 2],
-                replaceE: 'css;div.pg',
+                nextLink: 'a.nxt',
+                pageElement: 'div#threadlist div.bm_c table > tbody',
+                HT_insert: ['div#threadlist div.bm_c table', 2],
+                replaceE: 'div.pg',
             }
         },
         youreply: {
             SiteTypeID: 5,
             pager: {
-                nextLink: '//a[@class="nxt"][@href]',
-                pageElement: 'css;tbody > tr:not(.th)',
-                HT_insert: ['css;tbody', 2],
-                replaceE: 'css;div.pg',
+                nextLink: 'a.nxt',
+                pageElement: 'tbody > tr:not(.th)',
+                HT_insert: ['tbody', 2],
+                replaceE: 'div.pg',
             }
         }
     };
@@ -162,12 +160,13 @@
         }
         showPosts(); //                                                   自动显示帖子内被隐藏的回复
         blockUsers('thread'); //                                          屏蔽用户（黑名单）
-        if (menu_value('menu_onlineStatus')) onlineStatus(); //           显示是否在线
+        onlineStatus(); //                                                显示是否在线
         replyCustom('thread'); //                                         回复自定义
     } else if (patt_forum.test(location.pathname) || location.search.indexOf('mod=forumdisplay') > -1) { // 各板块帖子列表
         curSite = DBSite.forum;
-        if (menu_value('menu_collapsedNowPost')) collapsedNowPost(); //   收起当前帖子预览（左键左右两侧空白处）
-        if (menu_value('menu_delate255')) delate255(); //                 自动隐藏阅读权限 255 的帖子
+        collapsedNowPost(); //                                            收起当前帖子预览（左键左右两侧空白处）
+        delate255(); //                                                   屏蔽 255 权限帖子
+        delatePolls(); //                                                 屏蔽投票贴子
         blockUsers('forum'); //                                           屏蔽用户（黑名单）
         blockKeywords(); //                                               屏蔽关键词（帖子标题）
         vfastpostDOMNodeInserted(); //                                    监听插入事件（预览快速回复带签名）
@@ -190,8 +189,8 @@
 
     curSite.pageUrl = ""; // 下一页URL
     pageLoading(); // 自动翻页
-    if(menu_value('menu_backToTop'))backToTop(); //    回到顶部（右键点击左右两侧空白处）
-    if(menu_value('menu_autoSignIn'))autoSignIn(); //  自动签到（访问空间 10 次 = 20 积分）
+     backToTop(); //    回到顶部（右键点击左右两侧空白处）
+    if(menu_value('menu_autoSignIn')) autoSignIn(); //  自动签到（访问空间 10 次 = 20 积分）
     //replyIntervalDOMNodeInserted(); //                 监听插入事件（回帖间隔）
 
 
@@ -211,7 +210,7 @@
             let signIn = setInterval(function(){
                 GM_xmlhttpRequest({
                     url: url_list[url++],
-                    method: "GET",
+                    method: 'GET',
                     timeout: 4000
                 });
                 console.log(`[全球主机交流论坛 增强] 积分 +2 (${url_list[url]})`);
@@ -249,14 +248,13 @@
 
     // 屏蔽用户
     function blockUsers(type) {
-        if (!menu_value('menu_blockUsers')) return
         if (!menu_value('menu_customBlockUsers') || menu_value('menu_customBlockUsers').length < 1) return
         switch(type) {
             case 'thread': // 帖子内
                 blockUsers_('[id^="post_"]', 'a[href^="space-uid"]');
                 blockUsers_('[id^="comment_"] > div', 'a.xi2.xw1'); // 点评
                 break;
-            case 'forum': // 各版块帖子列表
+            case 'forum': //  各版块帖子列表
                 blockUsers_('[id^="normalthread_"]', 'a[href^="space-uid"]');
                 blockUsers_vfastpost(); // 预览帖子中的回复
                 break;
@@ -266,15 +264,13 @@
             case 'notice': // 消息
                 blockUsers_('dl.cl', '.ntc_body a[href^="space-uid"]');
                 break;
-            case 'pm': // 私人聊天
+            case 'pm': //     私人聊天
                 blockUsers_('dl[id^="pmlist_"]', '.ptm.pm_c a[href^="space-uid"]');
                 break;
         }
 
         function blockUsers_(list1, list2) {
-            let listItem = document.querySelectorAll(list1);
-            if (listItem.length < 1) return
-            listItem.forEach(function(item){ // 遍历所有帖子
+            document.querySelectorAll(list1).forEach(function(item){ // 遍历所有帖子
                 menu_value('menu_customBlockUsers').forEach(function(item1){ // 遍历用户黑名单
                     let itemName = item.querySelector(list2); // 寻找用户名
                     if (itemName && itemName.textContent === item1) {
@@ -287,10 +283,8 @@
 
         function blockUsers_vfastpost() {
             let vfastpost = e => {
-                if (e.target.innerHTML && e.target.innerHTML.indexOf('id="vfastpost"') > -1) {
-                    let listItem = e.target.querySelectorAll('.bm_c > [id^="post_"]');
-                    if (listItem.length < 1) return
-                    listItem.forEach(function(item){ // 遍历所有回复
+                if (e.target.nodeType == 1 && e.target.outerHTML && e.target.outerHTML.indexOf('class="fastpreview"') > -1) {
+                    e.target.querySelectorAll('.bm_c > [id^="post_"]').forEach(function(item){ // 遍历所有回复
                         menu_value('menu_customBlockUsers').forEach(function(item1){ // 遍历用户黑名单
                             let itemName = item.querySelector('a.xi2'); // 寻找用户名
                             if (itemName && itemName.textContent === item1) {
@@ -323,11 +317,8 @@
 
     // 屏蔽关键词（帖子标题）
     function blockKeywords() {
-        if (!menu_value('menu_blockKeywords')) return
         if (!menu_value('menu_customBlockKeywords') || menu_value('menu_customBlockKeywords').length < 1) return
-        let listItem = document.querySelectorAll('[id^="normalthread_"]');
-        if (listItem.length < 1) return
-        listItem.forEach(function(item){ // 遍历所有帖子标题
+        document.querySelectorAll('[id^="normalthread_"]').forEach(function(item){ // 遍历所有帖子标题
             menu_value('menu_customBlockKeywords').forEach(function(item1){ // 遍历关键词
                 let itemName = item.querySelector('a.s.xst'); // 寻找帖子标题
                 if (itemName && itemName.textContent.indexOf(item1) > -1) {
@@ -342,7 +333,7 @@
     // 监听插入事件（有新的回复主题，点击查看）
     function blockDOMNodeInserted() {
         let block = e => {
-            if (e.target.textContent && e.target.textContent.indexOf('newthread') > -1) {
+            if (e.target.nodeType == 1 && e.target.textContent && e.target.textContent.indexOf('newthread') > -1) {
                 setTimeout(function () {
                     blockUsers('forum'); //                           屏蔽用户（黑名单）
                     blockKeywords(); //                               屏蔽关键词（帖子标题）
@@ -356,7 +347,7 @@
     // 监听插入事件（预览快速回复带签名）
     function vfastpostDOMNodeInserted() {
         let vfastpost = e => {
-            if (e.target.innerHTML && e.target.innerHTML.indexOf('id="vfastpost"') > -1) {
+            if (e.target.nodeType == 1 && e.target.innerHTML && e.target.innerHTML.indexOf('id="vfastpost"') > -1) {
                 e.target.getElementsByTagName('form')[0].insertAdjacentHTML('afterbegin', `<input type="hidden" name="usesig" value="1">`);
             }
         }
@@ -395,7 +386,7 @@
 
         function replyCustom_0() {
             let vfastpost = e => {
-                if (e.target.innerHTML && e.target.innerHTML.indexOf('id="vfastpost"') > -1) {
+                if (e.target.nodeType == 1 && e.target.innerHTML && e.target.innerHTML.indexOf('id="vfastpost"') > -1) {
                     let message = e.target.querySelector('input[name="message"]'), id = message.id.match(/\d+/g)[0];
                     message.parentNode.innerHTML = `<textarea type="text" name="message" id="vmessage_${id}" style="width: 99.8%;height: 30px;border: none;outline: none;font-size: 14px;overflow-y: hidden;"></textarea>`
                     document.getElementById(`vreplysubmit_${id}`).onclick = function(){
@@ -408,8 +399,7 @@
 
         function replyCustom_1() {
             let floatlayout_reply = e => {
-                console.log()
-                if (e.target.innerHTML && e.target.innerHTML.indexOf('id="floatlayout_reply"') > -1) {
+                if (e.target.nodeType == 1 && e.target.innerHTML && e.target.innerHTML.indexOf('id="floatlayout_reply"') > -1) {
                     document.getElementById('postsubmit').onclick = function(){
                         if (GM_getValue('menu_customLittleTail')) document.getElementById('postmessage').value += GM_getValue('menu_customLittleTail').replaceAll('\\n', '\n');
                     }
@@ -438,7 +428,7 @@
     // 监听插入事件（回帖间隔）
     /*function replyIntervalDOMNodeInserted() {
         let replyInterval = e => {
-            if (e.target.innerHTML && e.target.textContent.indexOf('发表回复 金钱+1') > -1) {
+            if (e.target.nodeType == 1 && e.target.innerHTML && e.target.textContent.indexOf('发表回复 金钱+1') > -1) {
                 setTimeout(function () {GM_notification({text: '过去 60 秒了，可以回帖了~', timeout: 3500});}, 60000)
             }
         }
@@ -504,8 +494,9 @@
     }
 
 
-    // 自动隐藏阅读权限 255 的帖子
+    // 屏蔽阅读权限 255 的帖子
     function delate255() {
+        if (!menu_value('menu_delate255')) return
         if (patt_forum.test(location.pathname) || location.search.indexOf('mod=forumdisplay') > -1){
             document.querySelectorAll('tbody[id^="normalthread_"] .xw1').forEach(function (_this) {
                 if (_this.textContent === '255') {
@@ -516,12 +507,23 @@
     }
 
 
+    // 屏蔽投票贴
+    function delatePolls() {
+        if (!menu_value('menu_delatePolls')) return
+        if (patt_forum.test(location.pathname) || location.search.indexOf('mod=forumdisplay') > -1){
+            document.querySelectorAll('tbody[id^="normalthread_"] .icn>a>img[alt="投票"]').forEach(function (_this) {
+                    _this.parentNode.parentNode.parentNode.parentNode.hidden = true;
+            })
+        }
+    }
+
+
     // 自动翻页
     function pageLoading() {
         if (!menu_value('menu_pageLoading')) return
         if (curSite.SiteTypeID > 0){
             windowScroll(function (direction, e) {
-                if (direction === "down") { // 下滑才准备翻页
+                if (direction === 'down') { // 下滑才准备翻页
                     let scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
                     if (document.documentElement.scrollHeight <= document.documentElement.clientHeight + scrollTop + 999) {
                         if (curSite.SiteTypeID === SiteType.FORUM) { // 如果是各版块帖子列表则直接点下一页就行了
@@ -529,10 +531,11 @@
                             if (autopbn && autopbn.textContent === "下一页 »"){ // 如果已经在加载中了，就忽略
                                 autopbn.click();
                                 let timer = setInterval(function(){ // 在下一页加载完成后
-                                    if (document.querySelector('#autopbn').textContent === "下一页 »") {
-                                        if (menu_value('menu_delate255')) delate255(); // 隐藏 255 权限帖子
-                                        if (menu_value('menu_blockUsers')) blockUsers('forum'); // 屏蔽用户（黑名单）
-                                        if (menu_value('menu_blockKeywords')) blockKeywords(); // 屏蔽关键词（帖子标题）
+                                    if (document.querySelector('#autopbn').textContent === '下一页 »') {
+                                        delate255(); // 屏蔽 255 权限帖子
+                                        delatePolls(); // 屏蔽投票贴子
+                                        blockUsers('forum'); // 屏蔽用户（黑名单）
+                                        blockKeywords(); // 屏蔽关键词（帖子标题）
                                         clearInterval(timer);
                                     }
                                 }, 10);
@@ -592,9 +595,8 @@
         },
         loadMorePage: function () {
             if (curSite.pager) {
-                let curPageEle = getElementByXpath(curSite.pager.nextLink);
+                let curPageEle = document.querySelector(curSite.pager.nextLink);
                 var url = this.getFullHref(curPageEle);
-                //console.log(`${url} ${curPageEle} ${curSite.pageUrl}`);
                 if(url === '') return;
                 if(curSite.pageUrl === url) return;// 不会重复加载相同的页面
                 curSite.pageUrl = url;
@@ -602,32 +604,26 @@
                 curSite.pager.startFilter && curSite.pager.startFilter();
                 GM_xmlhttpRequest({
                     url: url,
-                    method: "GET",
+                    method: 'GET',
                     timeout: 5000,
                     onload: function (response) {
                         try {
                             var newBody = ShowPager.createDocumentByString(response.responseText);
-                            let pageElems = getAllElements(curSite.pager.pageElement, newBody, newBody);
-                            let toElement = getAllElements(curSite.pager.HT_insert[0])[0];
+                            let pageElems = getAllCSS(curSite.pager.pageElement, newBody),
+                                toElement = getAllCSS(curSite.pager.HT_insert[0])[0];
                             if (pageElems.length >= 0) {
                                 let addTo = "beforeend";
-                                if (curSite.pager.HT_insert[1] == 1) addTo = "beforebegin";
+                                if (curSite.pager.HT_insert[1] == 1) addTo = 'beforebegin';
                                 // 插入新页面元素
-                                pageElems.forEach(function (one) {
-                                    toElement.insertAdjacentElement(addTo, one);
-                                });
-                                if (menu_value('menu_blockUsers')) { // 屏蔽用户（黑名单）
-                                    if (patt_thread.test(location.pathname) || location.search.indexOf('mod=viewthread') > -1) {
-                                        blockUsers('thread');
-                                    } else if (location.pathname === '/search.php') {
-                                        blockUsers('search');
-                                    }
-                                }
-                                if (menu_value('menu_delate255')) delate255(); // 隐藏 255 权限帖子
+                                pageElems.forEach(function (one) {toElement.insertAdjacentElement(addTo, one);});
+                                // 屏蔽用户（黑名单）
+                                if (patt_thread.test(location.pathname) || location.search.indexOf('mod=viewthread') > -1) {blockUsers('thread');} else if (location.pathname === '/search.php') {blockUsers('search');}
+                                delate255(); // 屏蔽 255 权限帖子
+                                delatePolls(); // 屏蔽投票贴子
                                 // 替换待替换元素
                                 try {
-                                    let oriE = getAllElements(curSite.pager.replaceE);
-                                    let repE = getAllElements(curSite.pager.replaceE, newBody, newBody);
+                                    let oriE = getAllCSS(curSite.pager.replaceE),
+                                        repE = getAllCSS(curSite.pager.replaceE, newBody);
                                     if (oriE.length === repE.length) {
                                         for (var i = 0; i < oriE.length; i++) {
                                             oriE[i].outerHTML = repE[i].outerHTML;
@@ -645,61 +641,7 @@
             }
         },
     };
-    function getElementByCSS(css, contextNode = document) {
-        return contextNode.querySelector(css);
-    }
-    function getAllElementsByCSS(css, contextNode = document) {
+    function getAllCSS(css, contextNode = document) {
         return [].slice.call(contextNode.querySelectorAll(css));
-    }
-    function getElementByXpath(xpath, contextNode, doc = document) {
-        contextNode = contextNode || doc;
-        try {
-            const result = doc.evaluate(xpath, contextNode, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-            // 应该总是返回一个元素节点
-            return result.singleNodeValue && result.singleNodeValue.nodeType === 1 && result.singleNodeValue;
-        } catch (err) {
-            throw new Error(`Invalid xpath: ${xpath}`);
-        }
-    }
-    function getAllElementsByXpath(xpath, contextNode, doc = document) {
-        contextNode = contextNode || doc;
-        const result = [];
-        try {
-            const query = doc.evaluate(xpath, contextNode, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-            for (let i = 0; i < query.snapshotLength; i++) {
-                const node = query.snapshotItem(i);
-                // 如果是 Element 节点
-                if (node.nodeType === 1) result.push(node);
-            }
-        } catch (err) {
-            throw new Error(`无效 Xpath: ${xpath}`);
-        }
-        return result;
-    }
-    function getAllElements(selector, contextNode = undefined, doc = document, win = window, _cplink = undefined) {
-        if (!selector) return [];
-        contextNode = contextNode || doc;
-        if (typeof selector === 'string') {
-            if (selector.search(/^css;/i) === 0) {
-                return getAllElementsByCSS(selector.slice(4), contextNode);
-            } else {
-                return getAllElementsByXpath(selector, contextNode, doc);
-            }
-        } else {
-            const query = selector(doc, win, _cplink);
-            if (!Array.isArray(query)) {
-                throw new Error('getAllElements 返回错误类型');
-            } else {
-                return query;
-            }
-        }
-    }
-
-
-    // 通过 Cookie 来判断是否登录
-    function getLoginStatus() {
-        let cookie = document.cookie.split(';');
-        for (let i=0; i<cookie.length; i++) {if (cookie[i].trim().indexOf('hkCM_2132_checkpm=') === 0) return true;}
-        return false;
     }
 })();

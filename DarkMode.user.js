@@ -1,8 +1,14 @@
 // ==UserScript==
 // @name         护眼模式
-// @version      1.3.5
+// @name:zh-CN   护眼模式
+// @name:zh-TW   護眼模式
+// @name:en      Dark Mode
+// @version      1.4.7
 // @author       X.I.U
 // @description  简单有效的全网通用护眼模式（夜间模式、暗黑模式、深色模式）
+// @description:zh-CN  简单有效的全网通用护眼模式（夜间模式、暗黑模式、深色模式）
+// @description:zh-TW  簡單有效的全網通用護眼模式（夜間模式、暗黑模式、深色模式）
+// @description:en  Simple and effective network-wide eye protection mode (night mode, dark mode, dark mode)
 // @match        *://*/*
 // @icon         data:image/png;base64,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
 // @grant        GM_registerMenuCommand
@@ -28,14 +34,18 @@
         ['menu_autoRecognition', '智能排除自带暗黑模式的网页 (beta)', '智能排除自带暗黑模式的网页 (beta)', true],
         ['menu_forcedToEnable', '✅ 已强制当前网站启用护眼模式 (👆)', '❌ 未强制当前网站启用护眼模式 (👆)', []],
         ['menu_darkModeType', '点击切换模式', '点击切换模式', 2],
-        ['menu_customMode', '自定义当前模式', '自定义当前模式', true], ['menu_customMode1',,,'80|70'], ['menu_customMode2',,,'80|20|70|30'], ['menu_customMode3',,,'80'],
-        ['menu_customTime', '自定义昼夜时间', '自定义昼夜时间', '6|18'],
+        ['menu_customMode', '自定义当前模式', '自定义当前模式', true], ['menu_customMode1',,,'60|50'], ['menu_customMode2',,,'60|40|50|50'], ['menu_customMode3',,,'90'], ['menu_customMode3_exclude',,,'img, .img, video, [style*="background"][style*="url"], svg'],
+        ['menu_customTime', '自定义昼夜时间', '自定义昼夜时间', '6:00|18:00'],
         ['menu_autoSwitch', '晚上自动切换模式', '晚上自动切换模式', ''],
     ], menu_ID = [];
     for (let i=0;i<menu_ALL.length;i++){ // 如果读取到的值为 null 就写入默认值
         if (GM_getValue(menu_ALL[i][0]) == null){GM_setValue(menu_ALL[i][0], menu_ALL[i][3])};
     }
     registerMenuCommand();
+
+    // 自定义昼夜时间 过渡性调整（精确到分钟），过段时间移除
+    if (GM_getValue('menu_customTime', '').indexOf(':') === -1) GM_setValue('menu_customTime', GM_getValue('menu_customTime', '6|18').replace('|',':00|') + ':00')
+
     if (menu_ID.length > 1) {addStyle();}
 
 
@@ -80,7 +90,7 @@
                 GM_setValue(menu_ALL[i][0], menu_ALL[i][3]);
                 menu_ID[i] = GM_registerMenuCommand(`#️⃣ ${menu_ALL[i][1]}`, function(){menu_customTime()});
             }
-            else if (menu_ALL[i][0] === 'menu_customMode1' || menu_ALL[i][0] === 'menu_customMode2' || menu_ALL[i][0] === 'menu_customMode3')
+            else if (menu_ALL[i][0] === 'menu_customMode1' || menu_ALL[i][0] === 'menu_customMode2' || menu_ALL[i][0] === 'menu_customMode3' || menu_ALL[i][0] === 'menu_customMode3_exclude')
             { // 当前模式值
                 GM_setValue(menu_ALL[i][0], menu_ALL[i][3]);
             }
@@ -103,7 +113,7 @@
                 menu_ID[i] = GM_registerMenuCommand(`${menu_ALL[i][3]?'✅':'❌'} ${menu_ALL[i][1]}`, function(){menu_switch(`${menu_ALL[i][3]}`,`${menu_ALL[i][0]}`,`${menu_ALL[i][2]}`)});
             }
         }
-        menu_ID[menu_ID.length] = GM_registerMenuCommand('💬 反馈 & 建议', function () {window.GM_openInTab('https://github.com/XIU2/UserScript#xiu2userscript', {active: true,insert: true,setParent: true});window.GM_openInTab('https://greasyfork.org/zh-CN/scripts/412212/feedback', {active: true,insert: true,setParent: true});});
+        menu_ID[menu_ID.length] = GM_registerMenuCommand('💬 反馈 & 建议', function () {window.GM_openInTab('https://github.com/XIU2/UserScript#xiu2userscript', {active: true,insert: true,setParent: true});window.GM_openInTab('https://greasyfork.org/zh-CN/scripts/426377/feedback', {active: true,insert: true,setParent: true});});
     }
 
 
@@ -135,7 +145,7 @@
     function getAutoSwitch() {
         let darkModeType = GM_getValue('menu_darkModeType'), hours = new Date().getHours(), time = GM_getValue('menu_customTime').split('|').map(Number);
         if (GM_getValue('menu_autoSwitch') != '') { // 晚上自动切换模式
-            if (hours > time[0] && hours < time[1]) { // 白天
+            if (isDaytime()) { // 白天
                 darkModeType = GM_getValue('menu_autoSwitch').split('|')[0];
             } else { // 晚上
                 darkModeType = GM_getValue('menu_autoSwitch').split('|')[1];
@@ -150,18 +160,18 @@
         let newMods, tip, defaults, name;
         switch(getAutoSwitch()) {
             case 1:
-                tip = '自定义 [模式 1]，修改后立即生效 (部分网页可能需要刷新)~\n格式：亮度 (白天)|亮度 (晚上)\n默认：80|70（均为百分比 1~100，不需要 % 符号）';
-                defaults = '80|70';
+                tip = '自定义 [模式 1]，修改后立即生效 (部分网页可能需要刷新)~\n格式：亮度 (白天)|亮度 (晚上)\n默认：60|50（均为百分比 1~100，不需要 % 符号）';
+                defaults = '60|50';
                 name = 'menu_customMode1';
                 break;
             case 2:
-                tip = '自定义 [模式 2]，修改后立即生效 (部分网页可能需要刷新)~\n格式：亮度 (白天)|暖色 (白天)|亮度 (晚上)|暖色 (晚上)\n默认：80|20|70|30（均为百分比 1~100，不需要 % 符号）';
-                defaults = '80|20|70|30';
+                tip = '自定义 [模式 2]，修改后立即生效 (部分网页可能需要刷新)~\n格式：亮度 (白天)|暖色 (白天)|亮度 (晚上)|暖色 (晚上)\n默认：60|40|50|50（均为百分比 1~100，不需要 % 符号）';
+                defaults = '60|40|50|50';
                 name = 'menu_customMode2';
                 break;
             case 3:
-                tip = '自定义 [模式 3]，修改后立即生效 (部分网页可能需要刷新)~\n格式：反色\n默认：80（均为百分比 50~100，不需要 % 符号）';
-                defaults = '80';
+                tip = '自定义 [模式 3]，修改后立即生效 (部分网页可能需要刷新)~\n格式：反色\n默认：90（均为百分比 50~100，不需要 % 符号）';
+                defaults = '90';
                 name = 'menu_customMode3';
                 break;
         }
@@ -173,6 +183,19 @@
             GM_setValue(`${name}`, newMods);
             registerMenuCommand(); // 重新注册脚本菜单
         }
+        if (getAutoSwitch() == 3) {
+            tip = '自定义 [模式 3] 排除目标，修改后立即生效 (部分网页可能需要刷新)~\n格式：CSS 选择器 (如果不会写可以找我)\n默认：img, .img, video, [style*="background"][style*="url"], svg\n (使用英文逗号间隔，末尾不要有逗号)';
+            defaults = 'img, .img, video, [style*="background"][style*="url"], svg';
+            name = 'menu_customMode3_exclude';
+            newMods = prompt(tip, GM_getValue(`${name}`));
+            if (newMods === '') {
+                GM_setValue(`${name}`, defaults);
+                registerMenuCommand(); // 重新注册脚本菜单
+            } else if (newMods != null) {
+                GM_setValue(`${name}`, newMods);
+                registerMenuCommand(); // 重新注册脚本菜单
+            }
+        }
         if (document.getElementById('XIU2DarkMode')) {
             document.getElementById('XIU2DarkMode').remove(); // 即时修改样式
             addStyle();
@@ -182,9 +205,9 @@
 
     // 自定义昼夜时间
     function menu_customTime() {
-        let newMods = prompt('自定义脚本内和白天/晚上相关的时间，修改后刷新网页生效~\n格式：6|18 (即 6:00 ~ 18:00 之间是白天时间)', GM_getValue('menu_customTime'));
+        let newMods = prompt('自定义脚本内和白天/晚上相关的时间，修改后刷新网页生效~\n格式：6:00|18:30 (即 6:00 ~ 18:30 之间是白天时间)', GM_getValue('menu_customTime'));
         if (newMods === '') {
-            GM_setValue('menu_customTime', '6|18');
+            GM_setValue('menu_customTime', '6:00|18:00');
             registerMenuCommand(); // 重新注册脚本菜单
         } else if (newMods != null) {
             GM_setValue('menu_customTime', newMods);
@@ -321,12 +344,11 @@
     function addStyle() {
         let remove = false, style_Add = document.createElement('style'),
             hours = new Date().getHours(),
-            time = GM_getValue('menu_customTime').split('|').map(Number),
             style_10 = menu_value('menu_customMode1').split('|'),
             style_20 = menu_value('menu_customMode2').split('|'),
             style_30 = menu_value('menu_customMode3').split('|'),
             style = ``,
-            style_00 = `html, body {background-color: #ffffff;}`,
+            style_00 = `html, body {background-color: #ffffff !important;}`,
             style_11 = `html {filter: brightness(${style_10[0]}%) !important;}`,
             style_11_firefox = `html {filter: brightness(${style_10[0]}%) !important; background-image: url();}`,
             style_12 = `html {filter: brightness(${style_10[1]}%) !important;}`,
@@ -335,8 +357,12 @@
             style_21_firefox = `html {filter: brightness(${style_20[0]}%) sepia(${style_20[1]}%) !important; background-image: url();}`,
             style_22 = `html {filter: brightness(${style_20[2]}%) sepia(${style_20[3]}%) !important;}`,
             style_22_firefox = `html {filter: brightness(${style_20[2]}%) sepia(${style_20[3]}%) !important; background-image: url();}`,
-            style_31 = `html {filter: invert(${style_30[0]}%) !important;} img, video, [style*="background"][style*="url"] {filter: invert(1) !important;} img[alt="[公式]"] {filter: none !important;}`,
-            style_31_firefox = `html {filter: invert(${style_30[0]}%) !important; background-image: url();} img, video, [style*="background"][style*="url"] {filter: invert(1) !important;} img[alt="[公式]"] {filter: none !important;}`;
+            style_31 = `html {filter: invert(${style_30[0]}%) !important; text-shadow: 0 0 0 !important;}
+            ${menu_value('menu_customMode3_exclude')} {filter: invert(1) !important;}
+            img[alt="[公式]"] {filter: none !important;}`,
+            style_31_firefox = `html {filter: invert(${style_30[0]}%) !important; background-image: url(); text-shadow: 0 0 0 !important;}
+            ${menu_value('menu_customMode3_exclude')} {filter: invert(1) !important;}
+            img[alt="[公式]"] {filter: none !important;}`;
 
         // Firefox 浏览器需要特殊对待
         if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
@@ -348,7 +374,7 @@
         }
 
         // 白天
-        if (hours > time[0] && hours < time[1]) {
+        if (isDaytime()) {
             if (menu_value('menu_runDuringTheDay')) {
                 style_12 = style_11
                 style_22 = style_21
@@ -369,7 +395,13 @@
                 break;
             case 3:
                 style += style_31;
-                if (location.hostname.indexOf('.bilibili.com') > -1) {style += `#bilibiliPlayer video {filter: none !important;} #bilibiliPlayer:not(.mode-fullscreen), #bilibiliPlayer:not(.mode-fullscreen) .bilibili-player-video-sendbar {filter: invert(1) !important;} .bilibili-player.bilibili-player-area-v1, .bilibili-player.bilibili-player-area-v3, #bilibiliPlayer {box-shadow: none !important;} * {font-weight: bold !important;}`}
+                if (location.hostname.indexOf('search.bilibili.com') > -1) {
+                    style += `ul.video-list img, ul.video-list .video-item .img .mask-video, ul.video-list .video-item .img .van-danmu, ul.video-list .video-item .img .van-framepreview {filter: none !important;}`
+                } else if (location.hostname.indexOf('.bilibili.com') > -1) {
+                    style += `#bilibiliPlayer video, .video-item .img .mask-video, .video-item .img .van-danmu, .video-item .img .van-framepreview {filter: none !important;} #bilibiliPlayer:not(.mode-fullscreen), #bilibiliPlayer:not(.mode-fullscreen) .bilibili-player-video-sendbar {filter: invert(1) !important;} .bilibili-player.bilibili-player-area-v1, .bilibili-player.bilibili-player-area-v3, #bilibiliPlayer {box-shadow: none !important;} * {font-weight: bold !important;}`
+                } else if (location.hostname.indexOf('.huya.com') > -1) {
+                    style += `#player-wrap[style="height: 100%;"], .player-loading, .sidebar-show, #player-ctrl-wrap {filter: invert(1) !important;}`
+                }
                 break;
         }
         style_Add.id = 'XIU2DarkMode';
@@ -449,5 +481,16 @@
     function getColorValue(e) {
         let rgbValueArry = window.getComputedStyle(e).backgroundColor.replace(/rgba|rgb|\(|\)| /g, '').split (',')
         return parseInt(rgbValueArry[0] + rgbValueArry[1] + rgbValueArry[2])
+    }
+
+
+    // 判断当前是白天还是晚上
+    function isDaytime() {
+        let nowTime = new Date('2022-03-07 ' + new Date().getHours() + ':' + new Date().getMinutes() + ':00').getTime()/1000, time = GM_getValue('menu_customTime').split('|');
+        time[0] = new Date('2022-03-07 ' + time[0] + ':00').getTime()/1000;
+        time[1] = new Date('2022-03-07 ' + time[1] + ':00').getTime()/1000;
+
+        if (nowTime > time[0] && nowTime < time[1]) return true
+        return false
     }
 })();

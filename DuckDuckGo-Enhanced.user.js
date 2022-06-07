@@ -1,8 +1,14 @@
 // ==UserScript==
 // @name         DuckDuckGo 增强
-// @version      1.0.0
+// @name:zh-CN   DuckDuckGo 增强
+// @name:zh-TW   DuckDuckGo 增強
+// @name:en      DuckDuckGo Enhancements
+// @version      1.0.1
 // @author       X.I.U
 // @description  屏蔽指定域名、修复图标加载、链接不携来源、快捷回到顶部（右键两侧空白处）
+// @description:zh-CN  简单有效的全网通用护眼模式（夜间模式、暗黑模式、深色模式）
+// @description:zh-TW  屏蔽指定域名、修復圖標加載、鏈接不攜來源、快捷回到頂部（右鍵兩側空白處）
+// @description:en  Block the specified domain name, fix icon loading, link without source, and quickly return to the top (the blank space on both sides of the right button)...
 // @match        https://duckduckgo.com/*
 // @icon         https://duckduckgo.com/favicon.ico
 // @grant        GM_registerMenuCommand
@@ -40,7 +46,7 @@
                 menu_ID[i] = GM_registerMenuCommand(`${GM_getValue(menu_ALL[i][0])?'✅':'❌'} ${menu_ALL[i][1]}`, function(){menu_switch(GM_getValue(menu_ALL[i][0]), menu_ALL[i][0], menu_ALL[i][2])});
             }
         }
-        menu_ID[menu_ID.length] = GM_registerMenuCommand('💬 反馈 & 建议', function () {window.GM_openInTab('https://github.com/XIU2/UserScript#xiu2userscript', {active: true,insert: true,setParent: true});window.GM_openInTab('https://greasyfork.org/zh-CN/scripts/436428/feedback', {active: true,insert: true,setParent: true});});
+        menu_ID[menu_ID.length] = GM_registerMenuCommand('💬 反馈 & 建议', function () {GM_openInTab('https://github.com/XIU2/UserScript#xiu2userscript', {active: true,insert: true,setParent: true}); GM_openInTab('https://greasyfork.org/zh-CN/scripts/436428/feedback', {active: true,insert: true,setParent: true});});
     }
 
     // 菜单开关
@@ -135,11 +141,13 @@
     // 快捷回到顶部（右键两侧空白处）
     function backToTop() {
         if (!GM_getValue('menu_backToTop')) return
-        document.getElementById('web_content_wrapper').oncontextmenu = document.getElementById('links_wrapper').oncontextmenu = function(e){
-            if (e.target == this) {
-                e.preventDefault();
-                window.scrollTo(0,0);
+        document.querySelectorAll('#web_content_wrapper, #web_content_wrapper > .cw, #links_wrapper').forEach(ele => {
+            ele.oncontextmenu = function(e) {
+                if (e.target == this) {
+                    e.preventDefault();
+                    window.scrollTo(0,0);
+                }
             }
-        }
+        })
     }
 })();
