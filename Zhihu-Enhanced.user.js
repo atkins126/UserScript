@@ -3,13 +3,14 @@
 // @name:zh-CN   知乎增强
 // @name:zh-TW   知乎增強
 // @name:en      Zhihu enhancement
-// @version      2.1.0
+// @version      2.1.8
 // @author       X.I.U
 // @description  移除登录弹窗、屏蔽首页视频、默认收起回答、快捷收起回答/评论（左键两侧）、快捷回到顶部（右键两侧）、屏蔽用户、屏蔽关键词、移除高亮链接、屏蔽盐选内容、净化搜索热门、净化标题消息、展开问题描述、显示问题作者、置顶显示时间、完整问题时间、区分问题文章、直达问题按钮、默认高清原图、默认站外直链
 // @description:zh-TW  移除登錄彈窗、屏蔽首頁視頻、默認收起回答、快捷收起回答/評論、快捷回到頂部、屏蔽用戶、屏蔽關鍵詞、移除高亮鏈接、屏蔽鹽選內容、淨化搜索熱門、淨化標題消息、置頂顯示時間、完整問題時間、區分問題文章、默認高清原圖、默認站外直鏈...
 // @description:en  A more personalized Zhihu experience~
 // @match        *://www.zhihu.com/*
 // @match        *://zhuanlan.zhihu.com/*
+// @exclude      https://www.zhihu.com/signin*
 // @icon         https://static.zhihu.com/heifetz/favicon.ico
 // @grant        GM_xmlhttpRequest
 // @grant        GM_registerMenuCommand
@@ -260,8 +261,7 @@ function collapsedNowAnswer(selectors) {
         if (event.target == this) {
             // 下面这段主要是 [收起回答]，顺便 [收起评论]（如果展开了的话）
             let rightButton = document.querySelector('.ContentItem-actions.Sticky.RichContent-actions.is-fixed.is-bottom')
-            // 悬浮在底部的 [收起回答]（此时正在浏览回答内容 [中间区域]）
-            if (rightButton) {
+            if (rightButton) { // 悬浮在底部的 [收起回答]（此时正在浏览回答内容 [中间区域]）
                 // 固定的 [收起评论]（先看看是否展开评论）
                 let commentCollapseButton = rightButton.querySelector('button.Button.ContentItem-action.Button--plain.Button--withIcon.Button--withLabel:first-of-type')
                 //console.log('111')
@@ -270,8 +270,12 @@ function collapsedNowAnswer(selectors) {
                 rightButton = rightButton.querySelector('.ContentItem-rightButton[data-zop-retract-question]')
                 //console.log('222')
                 if (rightButton) rightButton.click();
-                // 固定在回答底部的 [收起回答]（此时正在浏览回答内容 [尾部区域]）
-            } else {
+
+            } else { // 固定在回答底部的 [收起回答]（此时正在浏览回答内容 [尾部区域]）
+
+                // 悬浮的 [收起评论]（此时正在浏览评论内容 [中间区域]）
+                //if (getXpath('//button[text()="收起评论"]',document.querySelector('.Comments-container'))) {getXpath('//button[text()="收起评论"]',document.querySelector('.Comments-container')).click();console.log('asfaf')}
+
                 let answerCollapseButton_ = false;
                 for (let el of document.querySelectorAll('.ContentItem-rightButton[data-zop-retract-question]')) { // 遍历所有回答底部的 [收起] 按钮
                     if (isElementInViewport(el)) { // 判断该 [收起] 按钮是否在可视区域内
@@ -279,7 +283,11 @@ function collapsedNowAnswer(selectors) {
                         let commentCollapseButton = el.parentNode.querySelector('button.Button.ContentItem-action.Button--plain.Button--withIcon.Button--withLabel:first-of-type')
                         // 如果展开了评论，就收起评论
                         //console.log('333')
-                        if (commentCollapseButton && commentCollapseButton.textContent.indexOf('收起评论') > -1) commentCollapseButton.click();
+                        //if (commentCollapseButton && commentCollapseButton.textContent.indexOf('收起评论') > -1) commentCollapseButton.click();
+                        if (commentCollapseButton && commentCollapseButton.textContent.indexOf('收起评论') > -1) {
+                            commentCollapseButton.click();
+                            if (!isElementInViewport(commentCollapseButton)) scrollTo(0,el.offsetTop+50)
+                        }
                         //console.log('444')
                         el.click() // 再去收起回答
                         answerCollapseButton_ = true; // 如果找到并点击收起了，就没必要执行下面的代码了（可视区域中没有 [收起回答] 时）
@@ -288,13 +296,16 @@ function collapsedNowAnswer(selectors) {
                 }
                 // 针对完全看不到 [收起回答] 按钮时（如 [头部区域]，以及部分明明很长却不显示悬浮横条的回答）
                 if (!answerCollapseButton_) {
-                    for (let el of document.querySelectorAll('.List-item, .Card.AnswerCard')) { // 遍历所有回答主体元素
+                    for (let el of document.querySelectorAll('.List-item, .Card.AnswerCard, .Card.TopstoryItem')) { // 遍历所有回答主体元素
                         if (isElementInViewport_(el)) { // 判断该回答是否在可视区域内
                             // 固定的 [收起评论]（先看看是否展开评论，即存在 [收起评论] 按钮）
-                            let commentCollapseButton = el.parentNode.querySelector('button.Button.ContentItem-action.Button--plain.Button--withIcon.Button--withLabel:first-of-type')
+                            let commentCollapseButton = el.querySelector('button.Button.ContentItem-action.Button--plain.Button--withIcon.Button--withLabel:first-of-type')
                             // 如果展开了评论，就收起评论
-                            //console.log('555')
-                            if (commentCollapseButton && commentCollapseButton.textContent.indexOf('收起评论') > -1) commentCollapseButton.click();
+                            //console.log('555',commentCollapseButton)
+                            if (commentCollapseButton && commentCollapseButton.textContent.indexOf('收起评论') > -1) {
+                                commentCollapseButton.click();
+                                if (!isElementInViewport(commentCollapseButton)) scrollTo(0,el.offsetTop+50)
+                            }
                             let answerCollapseButton__ = el.querySelector('.ContentItem-rightButton[data-zop-retract-question]');
                             //console.log('666')
                             if (answerCollapseButton__) answerCollapseButton__.click() // 再去收起回答
@@ -307,9 +318,9 @@ function collapsedNowAnswer(selectors) {
             // 下面这段只针对 [收起评论]（如果展开了的话）
             let commentCollapseButton_ = false, commentCollapseButton__ = false;
             // 悬浮的 [收起评论]（此时正在浏览评论内容 [中间区域]）
-            let commentCollapseButton = document.querySelector('.CommentCollapseButton')
+            let commentCollapseButton = getXpath('//button[text()="收起评论"]',document.querySelector('.Comments-container'))
             if (commentCollapseButton) {
-                //console.log('777')
+                //console.log('777', commentCollapseButton)
                 commentCollapseButton.click();
             } else { // 固定的 [收起评论]（此时正在浏览评论内容 [头部区域]）
                 let commentCollapseButton_1 = document.querySelectorAll('.ContentItem-actions > button.Button.ContentItem-action.Button--plain.Button--withIcon.Button--withLabel:first-of-type, .ContentItem-action > button.Button.Button--plain.Button--withIcon.Button--withLabel:first-of-type')
@@ -326,14 +337,16 @@ function collapsedNowAnswer(selectors) {
                     }
                 }
                 if (commentCollapseButton_ == false) { // 可视区域中没有 [收起评论] 时（此时正在浏览评论内容 [头部区域] + [尾部区域](不上不下的，既看不到固定的 [收起评论] 又看不到悬浮的 [收起评论])），需要判断可视区域中是否存在评论元素
-                    let commentCollapseButton_1 = document.querySelectorAll('.NestComment')
+                    let commentCollapseButton_1 = document.querySelectorAll('.Comments-container')
                     if (commentCollapseButton_1.length > 0) {
                         for (let el of commentCollapseButton_1) {
                             if (isElementInViewport(el)) {
-                                let commentCollapseButton = findParentElement(el, 'ContentItem AnswerItem').querySelector('.ContentItem-actions > button.Button.ContentItem-action.Button--plain.Button--withIcon.Button--withLabel:first-of-type')
+                                let parentElement = findParentElement(el, 'List-item') || findParentElement(el, 'Card '),
+                                    commentCollapseButton = parentElement.querySelector('.ContentItem-actions > button.Button.ContentItem-action.Button--plain.Button--withIcon.Button--withLabel:first-of-type')
                                 if (commentCollapseButton.textContent.indexOf('收起评论') > -1) {
                                     //console.log('999')
                                     commentCollapseButton.click()
+                                    if (!isElementInViewport(commentCollapseButton)) {console.log(parentElement,parentElement.offsetTop,parentElement.offsetHeight);scrollTo(0,parentElement.offsetTop+parentElement.offsetHeight-50)}
                                     commentCollapseButton__ = true // 如果找到并点击了，就没必要执行下面的代码了（可视区域中没有 评论元素 时）
                                     break
                                 }
@@ -341,15 +354,17 @@ function collapsedNowAnswer(selectors) {
                         }
                     }
                     if (commentCollapseButton__ == false) { // 如果上面的都没找到，那么就尝试寻找评论末尾的 [评论回复框]
-                        let commentCollapseButton_2 = document.querySelectorAll('.CommentsV2-footer.CommentEditorV2--normal .CommentEditorV2-inputWrap')
+                        let commentCollapseButton_2 = document.querySelectorAll('.Editable-content')
                         if (commentCollapseButton_2.length > 0) {
                             for (let el of commentCollapseButton_2) {
                                 if (isElementInViewport(el)) {
-                                    let commentCollapseButton = findParentElement(el, 'ContentItem AnswerItem').querySelector('.ContentItem-actions > button.Button.ContentItem-action.Button--plain.Button--withIcon.Button--withLabel:first-of-type')
+                                    let parentElement = findParentElement(el, 'List-item') || findParentElement(el, 'Card '),
+                                    commentCollapseButton = parentElement.querySelector('.ContentItem-actions > button.Button.ContentItem-action.Button--plain.Button--withIcon.Button--withLabel:first-of-type')
                                     //console.log(commentCollapseButton)
                                     if (commentCollapseButton.textContent.indexOf('收起评论') > -1) {
                                         //console.log('101010')
                                         commentCollapseButton.click()
+                                        if (!isElementInViewport(commentCollapseButton)) {console.log(parentElement,parentElement.offsetTop,parentElement.offsetHeight);scrollTo(0,parentElement.offsetTop+parentElement.offsetHeight-50)}
                                         break
                                     }
                                 }
@@ -389,9 +404,9 @@ function isElementInViewport(el) {
 function isElementInViewport_(el) {
     let rect = el.getBoundingClientRect();
     return (
-        rect.top <= (window.innerHeight || document.documentElement.clientHeight) &&
-        rect.left <= (window.innerWidth || document.documentElement.clientWidth)
-    );
+    rect.top < (window.innerHeight || document.documentElement.clientHeight) &&
+    rect.bottom > 0
+  );
 }
 
 
@@ -592,26 +607,18 @@ function blockUsers(type) {
             for (const mutation of mutationsList) {
                 for (const target of mutation.addedNodes) {
                     if (target.nodeType != 1) return
-                    let item = target.querySelector('img.Avatar.UserLink-avatar')
+                    let item = target.querySelector('img.Avatar[width="24"]')
                     if (item) {
+                        //console.log(item)
                         menu_value('menu_customBlockUsers').forEach(function(item1){ // 遍历用户黑名单
+                            //console.log(item.alt,item1)
                             if (item.alt === item1) { // 找到就删除该搜索结果
-                                if (findParentElement(item, 'NestComment--rootComment', true)) {
-                                    findParentElement(item, 'NestComment--rootComment', true).hidden = true;;
-                                } else if (findParentElement(item, 'NestComment--child', true)){
-                                    findParentElement(item, 'NestComment--child', true).hidden = true;;
-                                } else if (findParentElement(item, 'NestComment', true)){
-                                    findParentElement(item, 'NestComment', true).hidden = true;;
-                                } else if (findParentElement(item, 'CommentItemV2', true)){
-                                    findParentElement(item, 'CommentItemV2', true).hidden = true;;
-                                } else if (findParentElement(item, 'CommentItemV2 CommentItemV2--highlighted', true)){
-                                    findParentElement(item, 'CommentItemV2 CommentItemV2--highlighted', true).hidden = true;;
-                                }
+                                item.parentElement.parentElement.style.display = "none";
                             }
                         })
 
                         // 添加屏蔽用户按钮（点赞、回复等按钮后面）
-                        if (item) {
+                        /*if (item) {
                             let footer = findParentElement(item, 'CommentItemV2-meta', true).parentElement.querySelector('.CommentItemV2-metaSibling > .CommentItemV2-footer'),
                                 userid = item.parentElement;
                             if (userid && footer && !footer.lastElementChild.dataset.name) {
@@ -619,7 +626,7 @@ function blockUsers(type) {
                                 footer.insertAdjacentHTML('beforeend',`<button type="button" data-name="${item.alt}" data-userid="${userid}" class="Button CommentItemV2-hoverBtn Button--plain"><span style="display: inline-flex; align-items: center;">&#8203;<svg class="Zi Zi--Like" fill="currentColor" viewBox="0 0 24 24" width="16" height="16" style="transform: rotate(180deg); margin-right: 5px;"><path d="M18.376 5.624c-3.498-3.499-9.254-3.499-12.752 0-3.499 3.498-3.499 9.254 0 12.752 3.498 3.499 9.254 3.499 12.752 0 3.499-3.498 3.499-9.14 0-12.752zm-1.693 1.693c2.37 2.37 2.596 6.094.678 8.69l-9.367-9.48c2.708-1.919 6.32-1.58 8.69.79zm-9.48 9.48c-2.37-2.37-2.595-6.095-.676-8.69l9.48 9.48c-2.822 1.918-6.433 1.58-8.803-.79z" fill-rule="evenodd"></path></svg></span>屏蔽用户</button>`);
                                 footer.lastElementChild.onclick = function(){blockUsers_button_add(this.dataset.name, this.dataset.userid, false)}
                             }
-                        }
+                        }*/
                     }
                 }
             }
@@ -627,6 +634,7 @@ function blockUsers(type) {
         const observer = new MutationObserver(callback);
         observer.observe(document, { childList: true, subtree: true });
     }
+
 
     // 添加屏蔽用户按钮（用户信息悬浮框中）
     function blockUsers_button() {
@@ -929,6 +937,8 @@ function blockType(type) {
                 if (findParentElement(titleA, 'ContentItem AnswerItem').querySelector('.VideoAnswerPlayer')) {
                     if (menu_value('menu_blockTypeVideo')) findParentElement(titleA, 'Card TopstoryItem TopstoryItem-isRecommend').hidden = true;
                 }
+            } else if (titleA.href.indexOf('/education/video-course/') > -1) { // 如果是視頻課程
+                if (menu_value('menu_blockTypeVideo')) findParentElement(titleA, 'Card TopstoryItem TopstoryItem-isRecommend').hidden = true;
             } else if (titleA.href.indexOf('zhuanlan.zhihu.com') > -1) { // 如果是文章
                 if (menu_value('menu_blockTypeArticle')) findParentElement(titleA, 'Card TopstoryItem TopstoryItem-isRecommend').hidden = true;
             }
@@ -1201,14 +1211,8 @@ function closeFloatingComments() {
         for (const mutation of mutationsList) {
             for (const target of mutation.addedNodes) {
                 if (target.nodeType != 1) return
-                if (target.querySelector('.Modal-backdrop')) {
-                    document.querySelector('.Modal-backdrop').onclick = function(event){
-                        if (event.target == this) {
-                            let button = document.querySelector('.Button.Modal-closeButton.Button--plain');
-                            if (button) button.click();
-                        }
-                    }
-                }
+                let button = document.querySelector('button[aria-label="关闭"]');
+                if (button) {button.parentElement.parentElement.onclick = function(event){if (event.target.parentElement == this) {button.click();}}}
             }
         }
     };
@@ -1405,7 +1409,9 @@ function questionInvitation(){
         }
     })
 
-    if (GM_info.scriptHandler === 'Violentmonkey') { // Violentmonkey 比 Tampermonkey 加载更早，会导致一些元素还没加载，因此需要延迟一会儿
+    // Violentmonkey 比 Tampermonkey 加载更早，会导致一些元素还没加载，因此需要延迟一会儿
+    // Tampermonkey 4.18.0 版本可能需要延迟一会执行
+    if (GM_info.scriptHandler === 'Violentmonkey' || (GM_info.scriptHandler === 'Tampermonkey' && parseFloat(GM_info.version.slice(0,4)) >= 4.18)) {
         setTimeout(start, 300);
     } else {
         start();
@@ -1449,7 +1455,6 @@ function questionInvitation(){
         } else if (location.pathname.indexOf('/topic/') > -1) { //   话题页 //
             if (location.pathname.indexOf('/hot') > -1 || location.href.indexOf('/top-answers') > -1) { // 仅限 [讨论] [精华]
                 collapsedNowAnswer('main.App-main'); //                        收起当前回答 + 快捷返回顶部
-                collapsedNowAnswer('.ContentLayout'); //                       收起当前回答 + 快捷返回顶部
                 setInterval(function(){topTime_('.ContentItem.AnswerItem, .ContentItem.ArticleItem', 'ContentItem-meta')}, 300); // 置顶显示时间
                 addTypeTips(); //                                              区分问题文章
                 addToQuestion(); //                                            直达问题按钮

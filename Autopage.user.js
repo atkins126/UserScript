@@ -3,7 +3,7 @@
 // @name:zh-CN   自动无缝翻页
 // @name:zh-TW   自動無縫翻頁
 // @name:en      AutoPager
-// @version      6.0.8
+// @version      6.3.7
 // @author       X.I.U
 // @description  ⭐无缝加载 下一页内容 至网页底部（类似瀑布流）⭐，目前支持：【所有「Discuz!、Flarum、phpBB、Xiuno、XenForo、NexusPHP...」论坛】【百度、谷歌(Google)、必应(Bing)、搜狗、微信、360、Yahoo、Yandex 等搜索引擎...】、贴吧、豆瓣、知乎、B 站(bilibili)、NGA、V2EX、煎蛋网、龙的天空、起点中文、千图网、千库网、Pixabay、Pixiv、3DM、游侠网、游民星空、NexusMods、Steam 创意工坊、CS.RIN.RU、RuTracker、BT之家、萌番组、动漫花园、樱花动漫、爱恋动漫、AGE 动漫、Nyaa、SrkBT、RARBG、SubHD、423Down、不死鸟、扩展迷、小众软件、【动漫狂、动漫屋、漫画猫、漫画屋、漫画 DB、动漫之家、拷贝漫画、HiComic、Mangabz、Xmanhua 等漫画网站...】、PubMed、Z-Library、GreasyFork、Github、StackOverflow（以上仅一小部分，更多的写不下了...
 // @description:zh-TW  ⭐無縫加載 下一頁內容 至網頁底部（類似瀑布流）⭐，支持各論壇、社交、遊戲、漫畫、小說、學術、搜索引擎(Google、Bing、Yahoo...) 等網站~
@@ -11,16 +11,15 @@
 // @match        *://*/*
 // @connect      userscript.xiu2.xyz
 // @connect      userscript.gh2233.ml
-// @connect      raw.iqiq.io
-// @connect      hk1.monika.love
+// @connect      bitbucket.org
+// @connect      gitea.com
+// @connect      jsd.eagleyao.com
 // @connect      raw.fastgit.org
+// @connect      raw.iqiq.io
+// @connect      ghproxy.net
+// @connect      github.moeyy.xyz
+// @connect      raw.kgithub.com
 // @connect      cdn.staticaly.com
-// @connect      ghproxy.futils.com
-// @connect      ghproxy.fsofso.com
-// @connect      raw.xn--gzu630h.xn--kpry57d
-// @connect      raw.xn--p8jhe.tw
-// @connect      git.yumenaka.net
-// @connect      raw-gh.gcdn.mirr.one
 // @connect      gcore.jsdelivr.net
 // @connect      fastly.jsdelivr.net
 // @connect      raw.githubusercontents.com
@@ -89,17 +88,16 @@
         ['menu_history', '添加历史记录+修改地址/标题', '添加历史记录+修改地址/标题', true],
         ['menu_rules', '更新外置翻页规则 (每天自动)', '更新外置翻页规则 (每天自动)', {}],
         ['menu_customRules', '自定义翻页规则', '自定义翻页规则', {}]
-    ], urlArr = [ // 外置翻页规则更新地址分流，以保证更新成功率
+    ], urlArr = [ // 外置翻页规则更新地址分流，以确保更新成功率（记得 connect）
         'https://userscript.gh2233.ml/other/Autopage/rules.json',
-        //'https://raw.iqiq.io/XIU2/UserScript/master/other/Autopage/rules.json',
-        //'https://hk1.monika.love/XIU2/UserScript/master/other/Autopage/rules.json',
+        'https://bitbucket.org/xiu2/userscript/raw/master/other/Autopage/rules.json',
+        'https://gitea.com/XIU2/UserScript/raw/branch/master/other/Autopage/rules.json',
         'https://raw.fastgit.org/XIU2/UserScript/master/other/Autopage/rules.json',
-        'https://ghproxy.futils.com/https://github.com/XIU2/UserScript/blob/master/other/Autopage/rules.json',
-        'https://ghproxy.fsofso.com/https://github.com/XIU2/UserScript/blob/master/other/Autopage/rules.json',
-        'https://raw.xn--gzu630h.xn--kpry57d/XIU2/UserScript/master/other/Autopage/rules.json',
-        'https://raw.xn--p8jhe.tw/XIU2/UserScript/master/other/Autopage/rules.json',
-        'https://git.yumenaka.net/https://raw.githubusercontent.com/XIU2/UserScript/master/other/Autopage/rules.json',
-        'https://raw-gh.gcdn.mirr.one/XIU2/UserScript/master/other/Autopage/rules.json',
+        'https://jsd.eagleyao.com/gh/XIU2/UserScript/other/Autopage/rules.json',
+        'https://raw.iqiq.io/XIU2/UserScript/master/other/Autopage/rules.json',
+        'https://raw.kgithub.com/XIU2/UserScript/master/other/Autopage/rules.json',
+        'https://ghproxy.net/https://raw.githubusercontent.com/XIU2/UserScript/master/other/Autopage/rules.json',
+        'https://github.moeyy.xyz/https://raw.githubusercontent.com/XIU2/UserScript/master/other/Autopage/rules.json',
         'https://cdn.staticaly.com/gh/XIU2/UserScript/master/other/Autopage/rules.json',
         'https://gcore.jsdelivr.net/gh/XIU2/UserScript/other/Autopage/rules.json',
         'https://fastly.jsdelivr.net/gh/XIU2/UserScript/other/Autopage/rules.json',
@@ -107,15 +105,17 @@
     ], urlArr2 = [
         'https://userscript.gh2233.ml/other/Autopage/rules.json',
         'https://userscript.xiu2.xyz/other/Autopage/rules.json',
-        //'https://raw.iqiq.io/XIU2/UserScript/master/other/Autopage/rules.json',
-        //'https://hk1.monika.love/XIU2/UserScript/master/other/Autopage/rules.json',
+        'https://bitbucket.org/xiu2/userscript/raw/master/other/Autopage/rules.json',
+        'https://gitea.com/XIU2/UserScript/raw/branch/master/other/Autopage/rules.json',
         'https://raw.fastgit.org/XIU2/UserScript/master/other/Autopage/rules.json',
-        'https://ghproxy.futils.com/https://github.com/XIU2/UserScript/blob/master/other/Autopage/rules.json',
-        'https://ghproxy.fsofso.com/https://github.com/XIU2/UserScript/blob/master/other/Autopage/rules.json',
-        'https://raw.xn--gzu630h.xn--kpry57d/XIU2/UserScript/master/other/Autopage/rules.json',
-        'https://raw.xn--p8jhe.tw/XIU2/UserScript/master/other/Autopage/rules.json',
-        'https://git.yumenaka.net/https://raw.githubusercontent.com/XIU2/UserScript/master/other/Autopage/rules.json'
-    ], menuId = [], webType = 0, curSite = {SiteTypeID: 0}, DBSite, DBSite2, pausePage = true, pageNum = {now: 1, _now: 1}, urlC = false, nowLocation = '', lp = location.pathname, scriptHandler;
+        'https://raw.iqiq.io/XIU2/UserScript/master/other/Autopage/rules.json',
+        'https://raw.kgithub.com/XIU2/UserScript/master/other/Autopage/rules.json',
+        'https://ghproxy.net/https://raw.githubusercontent.com/XIU2/UserScript/master/other/Autopage/rules.json',
+        'https://github.moeyy.xyz/https://raw.githubusercontent.com/XIU2/UserScript/master/other/Autopage/rules.json'
+    ],
+        loadMoreExclude1 = ['stackoverflow.com'],
+        loadMoreExclude2 = ['.smzdm.com','.steampowered.com','.zcool.com.cn','.baidu.com'],
+        menuId = [], webType = 0, curSite = {SiteTypeID: 0}, DBSite, DBSite2, pausePage = true, pageNum = {now: 1, _now: 1}, urlC = false, nowLocation = '', lp = location.pathname, scriptHandler;
     window.autoPage = {lp: ()=>location.pathname, indexOF: indexOF, isMobile: isMobile, isUrlC: isUrlC, blank: forceTarget, getAll: getAll, getOne: getOne, getAllXpath: getAllXpath, getXpath: getXpath, getAllCSS: getAllCSS, getCSS: getCSS, getNextE: getNextE, getNextEP: getNextEP, getNextSP: getNextSP, getNextEPN: getNextEPN, getNextUPN: getNextUPN, getNextUP: getNextUP, getNextF: getNextF, getSearch: getSearch, getCookie: getCookie, insStyle: insStyle, insScript: insScript, src_bF: src_bF, xs_bF: xs_bF}
     if (typeof GM_info != 'undefined') {scriptHandler = GM_info.scriptHandler;} else if (typeof GM != 'undefined' && typeof GM.info != 'undefined') {scriptHandler = GM.info.scriptHandler;} else {scriptHandler = '';}
     for (let i=0;i<menuAll.length;i++){ // 如果读取到的值为 null 就写入默认值
@@ -180,16 +180,17 @@
         end:
         for (let now in DBSite) { // 遍历 对象
             if (!DBSite[now].host) continue; // 如果不存在则继续下一个循环
-            //console.log(DBSite[now].host)
             // 如果是 数组
+
             if (Array.isArray(DBSite[now].host)) {
 
                 for (let i of DBSite[now].host) { // 遍历 数组
+
                     // 针对自定义翻页规则中的正则
                     if (typeof i === 'string' && i.slice(0,1) === '/') i = new RegExp(i.slice(1,i.length-1))
                     if ((i instanceof RegExp && i.test(location.hostname)) || (typeof i === 'string' && i === location.hostname)) {
 
-                        if (self != top) {if (!DBSite[now].iframe) break end;} // 如果当前位于 iframe 框架下，就需要判断是否需要继续执行
+                        if (self != top) {if (!DBSite[now].iframe) continue end;} // 如果当前位于 iframe 框架下，就需要判断是否需要继续执行
                         if (DBSite[now].url) {
                             if (typeof DBSite[now].url == 'function') {
                                 DBSite[now].url();
@@ -201,7 +202,7 @@
                                         if (new Function('fun', DBSite[now].url)(window.autoPage)) {curSite = DBSite[now];} else {if (urlC === true) {support = true;}; break;}
                                     }
                                 } catch (e) {
-                                    console.error('[自动无缝翻页] - 当前网页规则 "url" 有误，请检查！', e);
+                                    console.error('[自动无缝翻页] - 当前网页规则 "url" 有误，请检查！', e, DBSite[now].url);
                                 }
                             }
                         } else {
@@ -217,7 +218,7 @@
                 if (typeof DBSite[now].host === 'string' && DBSite[now].host.slice(0,1) === '/') DBSite[now].host = new RegExp(DBSite[now].host.slice(1,DBSite[now].host.length-1))
                 if ((DBSite[now].host instanceof RegExp && DBSite[now].host.test(location.hostname)) || (typeof DBSite[now].host === 'string' && DBSite[now].host === location.hostname)) {
 
-                    if (self != top) {if (!DBSite[now].iframe) break;} // 如果当前位于 iframe 框架下，就需要判断是否需要继续执行
+                    if (self != top) {if (!DBSite[now].iframe) continue;} // 如果当前位于 iframe 框架下，就需要判断是否需要继续执行
                     if (DBSite[now].url) {
                         if (typeof DBSite[now].url == 'function') {
                             DBSite[now].url();
@@ -231,7 +232,7 @@
 
                                 }
                             } catch (e) {
-                                console.error('[自动无缝翻页] - 当前网页规则 "url" 有误，请检查！', e);
+                                console.error('[自动无缝翻页] - 当前网页规则 "url" 有误，请检查！', e, DBSite[now].url);
                             }
                         }
                     } else {
@@ -264,10 +265,10 @@
         } else if (getCSS('head meta[name="generator" i][content="nexusphp" i]') || getXpath('id("footer")[contains(string(), "NexusPHP")]')) {
             console.info(`[自动无缝翻页] - <NexusPHP> 论坛`); return 7;
 
-        } else if (location.hostname.indexOf('stackoverflow.com') == -1 && getAllCSS('.load-more, .load_more, .loadmore, #load-more, #load_more, #loadmore, .show-more, .show_more').length === 1) {
+        } else if (loadMoreExclude(loadMoreExclude1) && getAllCSS('.load-more, .load_more, .loadmore, #load-more, #load_more, #loadmore, .show-more, .show_more').length === 1) {
             console.info(`[自动无缝翻页] - 部分自带 自动无缝翻页 的网站 1`); return 8;
 
-        } else if (location.hostname.indexOf('.smzdm.com') == -1 && location.hostname.indexOf('.steampowered.com') == -1 && getAllXpath('//*[self::a or self::span or self::button or self::div][text()="加载更多" or text()="查看更多"][not(@href) or @href="#" or starts-with(@href, "javascript")]').length === 1) {
+        } else if (loadMoreExclude(loadMoreExclude2) && getAllXpath('//*[self::a or self::span or self::button or self::div][text()="加载更多" or text()="查看更多"][not(@href) or @href="#" or starts-with(@href, "javascript")]').length === 1) {
             console.info(`[自动无缝翻页] - 部分自带 自动无缝翻页 的网站 2`); return 9;
 
         } else if (getCSS('link[href*="/wp-content/" i], script[src*="/wp-content/" i]')) {
@@ -275,31 +276,38 @@
             //if (getAllCSS('article[class], div[id^="post-"], ul[class*="post"]>li.item, .post').length < 4 || getCSS('#nav-below, nav.navigation, nav.paging-navigation, .pagination, .wp-pagenavi, .pagenavi')) return 0;
 
             if (getCSS('.post-page-numbers.current+a')) {
+                DBSite.wp_article_post.pager.nextL = '.post-page-numbers.current+a'; DBSite.wp_article_post.pager.replaceE = '//a[contains(@class,"post-page-numbers")]/parent::*';
+            } else if (getXpath('//div[contains(@class,"fenye")]//a[string()="下一页"]')) {
+                DBSite.wp_article_post.pager.nextL = '//div[contains(@class,"fenye")]//a[string()="下一页"]'; DBSite.wp_article_post.pager.replaceE = '.fenye';
+            }
+            if (DBSite.wp_article_post.pager.nextL != undefined) {
                 if (getAllCSS('.entry-content').length == 1) {
-                    DBSite.wp_article_post.pager.pageE = '.entry-content>*:not(.page-links):not(.wbp-cbm)'
+                    DBSite.wp_article_post.pager.pageE = '.entry-content>*:not(.wbp-cbm):not(.page-links):not(.article-paging):not(.entry-pagination):not(.pagination):not(.fenye):not(.open-message):not(.article-social)'
                 } else if (getAllCSS('.article-content').length == 1) {
-                    DBSite.wp_article_post.pager.pageE = '.article-content>*:not(.article-paging)'
+                    DBSite.wp_article_post.pager.pageE = '.article-content>*:not(.page-links):not(.article-paging):not(.entry-pagination):not(.pagination):not(.fenye):not(.open-message):not(.article-social)'
                 } else if (getAllCSS('article').length == 1) {
-                    DBSite.wp_article_post.pager.pageE = 'article>*:not(.article-paging)'
+                    DBSite.wp_article_post.pager.pageE = 'article>*:not(.page-links):not(.article-paging):not(.entry-pagination):not(.pagination):not(.fenye):not(.open-message):not(.article-social)'
                 }
                 if (DBSite.wp_article_post.pager.pageE != undefined) console.info(`[自动无缝翻页] - 部分使用 WordPress 的网站 - 文章内`); return 11;
             }
 
+
             if (getCSS('a.next, a.next-page')) {
                 DBSite.wp_article.pager.nextL = 'a.next, a.next-page'
-            } else if (getCSS('a[rel="next" i], a[aria-label="Next Page" i], a[aria-label="下一页"], a[rel="下一页"], a[title="下一页"]')) {
-                DBSite.wp_article.pager.nextL = 'a[rel="next" i], a[aria-label="Next Page" i], a[aria-label="下一页"], a[rel="下一页"], a[title="下一页"]'
-            } else if (getCSS('li.next-page > a, li.next > a')) {
-                DBSite.wp_article.pager.nextL = 'li.next-page > a, li.next > a'
+            } else if (getCSS('a[rel="next" i], a[aria-label="Next Page" i], a[aria-label="下一页"], a[rel="下一页"], a[title="下一页"], a[aria-label="下一頁"], a[rel="下一頁"], a[title="下一頁"]')) {
+                DBSite.wp_article.pager.nextL = 'a[rel="next" i], a[aria-label="Next Page" i], a[aria-label="下一页"], a[rel="下一页"], a[title="下一页"], a[aria-label="下一頁"], a[rel="下一頁"], a[title="下一頁"]'
+            } else if (getCSS('li.next-page > a, li.next > a, li.pagination-next>a')) {
+                DBSite.wp_article.pager.nextL = 'li.next-page > a, li.next > a, li.pagination-next>a'
             } else if (getCSS('span.current+a')) {
                 DBSite.wp_article.pager.nextL = 'span.current+a'
             } else if (getCSS('.nav-previous a, a.nav-previous')) {
                 DBSite.wp_article.pager.nextL = '.nav-previous a, a.nav-previous'
-            } else if (getXpath('//a[contains(text(), "下一页") or contains(text(), ">") or contains(text(), "next") or contains(text(), "Next") or contains(text(), "NEXT")]', getCSS('#nav-below, nav.navigation, nav.paging-navigation, .pagination, .wp-pagenavi, .pagenavi, nav[role="navigation"]'))) {
-                DBSite.wp_article.pager.nextL = '//*[self::ul or self::nav or self::div][@id="nav-below" or contains(@class, "navigation") or contains(@class, "pagination") or contains(@class, "pagenavi") or @role="navigation"]//a[contains(text(), "下一页") or contains(text(), ">") or contains(text(), "next") or contains(text(), "Next") or contains(text(), "NEXT")]'
+            } else if (getXpath('//a[contains(text(), "下一页") or contains(text(), "下一頁") or contains(text(), ">") or contains(text(), "next") or contains(text(), "Next") or contains(text(), "NEXT")]', getCSS('#nav-below, nav.navigation, nav.paging-navigation, .pagination:not([class*="entry"]), .wp-pagenavi, .pagenavi, nav[role="navigation"]'))) {
+                DBSite.wp_article.pager.nextL = '//*[self::ul or self::nav or self::div][@id="nav-below" or contains(@class, "navigation") or contains(@class, "pagination") or contains(@class, "pagenavi") or @role="navigation"]//a[contains(text(), "下一页") or contains(text(), "下一頁") or contains(text(), ">") or contains(text(), "next") or contains(text(), "Next") or contains(text(), "NEXT")]'
             }
 
             if (DBSite.wp_article.pager.nextL != undefined) {
+                if (DBSite.wp_article.pager.nextL.indexOf('//') !== 0) DBSite.wp_article.pager.replaceE += ',' + DBSite.wp_article.pager.nextL
                 if (getAllCSS('main').length == 1) {
                     if (getAllCSS('main article[class]').length > 3) {
                         DBSite.wp_article.pager.pageE = 'main article[class]'
@@ -324,25 +332,31 @@
                 }
                 if (DBSite.wp_article.pager.pageE != undefined) {console.info(`[自动无缝翻页] - 部分使用 WordPress 的网站`); return 10;}
             }
-        } else if (getCSS('meta[name="generator" i][content*="Typecho" i]')) {
-            if (getCSS('li.next > a') && getCSS('.blog-post, .post-list') && getCSS('.page-navigator')) {
+        } else if (getCSS('meta[name="template" i][content="handsome" i]') && getCSS('.page-navigator')) {
                 console.info(`[自动无缝翻页] - 部分使用 Typecho 的网站 (handsome)`); return 12;
-            }
+        } else if (getCSS('meta[name="template" i][content="Mirages" i]') && getCSS('.page-navigator')) {
+                console.info(`[自动无缝翻页] - 部分使用 Typecho 的网站 (Mirages)`); return 13;
 
-        } else if (getCSS('.stui-page, .stui-page__item') && getCSS('li.active.hidden-xs+li.hidden-xs>a') && getCSS('.stui-vodlist')) {
+        } else if (getCSS('.stui-page, .stui-page__item, #long-page, .myui-page, .myui-page__item')) {
             console.info(`[自动无缝翻页] - 部分影视网站`); return 300;
+        } else if (getCSS('#page') && getCSS('.module-items')) {
+            console.info(`[自动无缝翻页] - 部分影视网站 2`); return 301;
 
         } else if (getCSS('.ArticleImageBox, .PictureList') && getCSS('.article_page') && getXpath('//div[contains(@class,"article_page")]//a[text()="下一页"]')) {
-            console.info(`[自动无缝翻页] - 部分美女图站 - 手机版`); return 301;
+            console.info(`[自动无缝翻页] - 部分美女图站 - 手机版`); return 302;
+        } else if (getCSS('meta[content^=SearXNG i], link[href*=SearXNG i], script[src*=SearXNG i]')) {
+            console.info(`[自动无缝翻页] - <SearXNG> 元搜索引擎`); return 303;
 
         } else if (getCSS('.content > #content') && getXpath('//div[contains(@class,"page_chapter")]//a[text()="下一章"]')) {
             console.info(`[自动无缝翻页] - <笔趣阁 1> 模板的小说网站`); return 200;
-        } else if (getCSS('#nr1, #chaptercontent, .Readarea, .ReadAjax_content') && getCSS('#pb_next')) {
-            console.info(`[自动无缝翻页] - <笔趣阁 2 - 手机版> 模板的小说网站`); return 201;
+        } else if (getCSS('#nr1, #chaptercontent, .Readarea, .ReadAjax_content') && getCSS('#pb_next, #linkNext')) {
+            console.info(`[自动无缝翻页] - <笔趣阁 1 - 手机版> 模板的小说网站`); return 201;
         } else if (getCSS('#txt, .txt') && getCSS('#pb_next, .url_next') && getCSS('.chapter-control, .chapter-page-btn')) {
-            console.info(`[自动无缝翻页] - <笔趣阁 3> 模板的小说网站`); return 202;
-        } else if ((getCSS('meta[name="description" i][content*="小说"], meta[name="description" i][content*="章节"], meta[name="description" i][content*="阅读"]') || location.hostname.indexOf('biqu') > -1 || document.title.indexOf('笔趣阁') > -1 || document.title.indexOf('小说') > -1) && (getCSS('[id="content" i], [class~="content" i], [id="chaptercontent" i], [class~="chaptercontent" i], [id="booktext" i], [id="txtcontent" i]') && getXpath('//a[contains(text(), "下一章") or contains(text(), "下一页")]'))) {
-            console.info(`[自动无缝翻页] - <笔趣阁 4> 模板的小说网站`); return 203;
+            console.info(`[自动无缝翻页] - <笔趣阁 2> 模板的小说网站`); return 202;
+        } else if ((getCSS('meta[name="description" i][content*="小说"], meta[name="description" i][content*="章节"], meta[name="description" i][content*="阅读"], meta[name="keywords" i][content*="笔趣"]') || location.hostname.indexOf('biqu')!=-1 || document.title.match(/笔趣阁|小说|章/)!=null) && getXpath('//a[contains(text(), "下一章") or contains(text(), "下一页") or contains(text(), "下一节")]')) {
+            let biquge3_pageE= ['[id="chaptercontent" i]','[class~="chaptercontent" i]','[id="booktext" i]','[class~="booktext" i]','[id="txtcontent" i]','[class~="txtcontent" i]','[id="textcontent" i]','[class~="textcontent" i]','[id="read-content" i]','[class~="read-content" i]','[id="txtnav" i]','[class~="txtnav" i]','[id="txt" i][class~="txt" i]','[id="content" i]','[class~="content" i]']
+            for(let biquge3_pageE_ of biquge3_pageE) {if (getAllCSS(biquge3_pageE_).length === 1) {DBSite.biquge3.pager.pageE = biquge3_pageE_;DBSite.biquge3.pager.insertP = [biquge3_pageE_,6];break;}}
+            if (DBSite.biquge3.pager.pageE != undefined) {console.info(`[自动无缝翻页] - <笔趣阁 3> 模板的小说网站`); return 203;}
         }
         return 0;
     }
@@ -372,18 +386,26 @@
                     curSite = DBSite.wp_article_post; break;
                 case 12: // < 部分使用 Typecho 的网站 (handsome) >
                     curSite = DBSite.typecho_handsome; break;
+                case 13: // < 部分使用 Typecho 的网站 (Mirages) >
+                    curSite = DBSite.typecho_mirages; break;
                 case 200: // < 所有使用 笔趣阁 1 模板的小说网站 >
                     DBSite.biquge1.url(); break;
-                case 201: // < 所有使用 笔趣阁 2 - 手机版 模板的小说网站 >
+                case 201: // < 所有使用 笔趣阁 1 - 手机版 模板的小说网站 >
                     curSite = DBSite.biquge1_m; break;
-                case 202: // < 所有使用 笔趣阁 3 模板的小说网站 >
+                case 202: // < 所有使用 笔趣阁 2 模板的小说网站 >
                     DBSite.biquge2.url(); break;
-                case 203: // < 所有使用 笔趣阁 4 模板的小说网站 >
+                case 203: // < 所有使用 笔趣阁 3 模板的小说网站 >
                     curSite = DBSite.biquge3; break;
                 case 300: // < 部分影视网站 >
                     curSite = DBSite.yingshi; break;
-                case 301: // < 部分美女图站 - 手机版 >
+                case 301: // < 部分影视网站 2 >
+                    curSite = DBSite.yingshi2; break;
+                case 302: // < 部分美女图站 - 手机版 >
                     curSite = DBSite.meinvtu_m; break;
+                case 303: // < SearXNG 元搜索引擎 >
+                    document.cookie='infinite_scroll=1; expires=Thu, 18 Dec 2031 12:00:00 GMT; path=/';
+                    document.cookie='results_on_new_tab=1; expires=Thu, 18 Dec 2031 12:00:00 GMT; path=/';
+                    break;
             }
         }
     }
@@ -466,8 +488,7 @@ function: {
                 pager: {
                     type: 2,
                     isHidden: true,
-                    interval: 1000,
-                    scrollD: 2000
+                    interval: 1000
                 }
             }, //           部分自带 自动无缝翻页 的网站
             wp_article: {
@@ -481,9 +502,9 @@ function: {
                 style: 'img[data-src], img[data-original] {opacity: 1 !important;}',
                 blank: 3,
                 pager: {
-                    type: 3,
-                    replaceE: '#nav-below, nav.navigation, nav.paging-navigation, .pagination, .wp-pagenavi, .pagenavi, nav[role="navigation"]',
-                    forceHTTPS: true
+                    replaceE: '#nav-below, nav.navigation, nav.paging-navigation, .pagination:not([class*="entry"]), .wp-pagenavi, .pagenavi, nav[role="navigation"], ul[class*="-pagination"]',
+                    forceHTTPS: true,
+                    scrollD: 3000
                 },
                 function: {
                     bF: src_bF
@@ -492,9 +513,7 @@ function: {
             wp_article_post: {
                 pager: {
                     type: 3,
-                    nextL: '.post-page-numbers.current+a',
-                    replaceE: '//a[contains(@class,"post-page-numbers")]/parent::*',
-                    scrollD: 2000
+                    scrollD: 3000
                 },
                 function: {
                     bF: src_bF
@@ -503,12 +522,20 @@ function: {
             typecho_handsome: {
                 blank: 3,
                 pager: {
-                    nextL: 'li.next > a',
+                    nextL: 'li.next>a',
                     pageE: '.blog-post, .post-list',
-                    replaceE: '.page-navigator',
-                    scrollD: 2000
+                    replaceE: '.page-navigator'
                 }
             }, //   部分使用 Typecho 的网站 (handsome)
+            typecho_mirages: {
+                blank: 3,
+                pager: {
+                    nextL: 'li.next>a',
+                    pageE: '#index>article, #archive>article',
+                    scriptT: 3,
+                    replaceE: '.page-navigator'
+                }
+            }, //    部分使用 Typecho 的网站 (Mirages)
             biquge1: {
                 url: ()=> {curSite = DBSite.biquge1;xs_bF(getAllCSS('.content > #content'),[/<br>.{0,10}秒记住.+$/, '']);},
                 style: 'img, .posterror, a[href*="posterror()"], [style*="background"][style*="url("]:not(html):not(body), #content > *:not(br):not(p) {display: none !important;}',
@@ -528,10 +555,10 @@ function: {
                 style: 'img, .posterror, .show-app2, a[href*="posterror()"], [onclick*="location.href"], [style*="background"][style*="url("]:not(html):not(body), #nr1>*:not(br):not(p), #chaptercontent>*:not(br):not(p), .Readarea>*:not(br):not(p), .ReadAjax_content>*:not(br):not(p) {display: none !important;}',
                 history: true,
                 pager: {
-                    nextL: '#pb_next',
+                    nextL: '#pb_next, #linkNext',
                     pageE: '#nr1, #chaptercontent, .Readarea, .ReadAjax_content',
                     insertP: ['#nr1, #chaptercontent, .Readarea, .ReadAjax_content', 6],
-                    replaceE: '//a[@id="pb_next"]/parent::*'
+                    replaceE: '//a[@id="pb_next" or @id="linkNext"]/parent::*'
                 }
             }, //          笔趣阁 2 - 手机版 模板的小说网站
             biquge2: {
@@ -555,19 +582,18 @@ function: {
                     nextL: '#pb_next, .url_next',
                     pageE: '#txt, .txt',
                     insertP: ['#txt, .txt', 6],
-                    replaceE: '.chapter-control, .chapter-page-btn',
-                    scrollD: 2000
+                    replaceE: '.chapter-control, .chapter-page-btn'
                 }
             }, //          笔趣阁 3 - 手机版 模板的小说网站
             biquge3: {
-                style: 'img, .posterror, a[href*="posterror()"], [style*="background"][style*="url("]:not(html):not(body), script+div[style="padding:15px;"] {display: none !important;}',
+                style: 'img, .posterror, a[href*="posterror()"], [style*="background"][style*="url("]:not(html):not(body), script+div[style="padding:15px;"], p[style*="font-weight:"] {display: none !important;}',
                 history: true,
                 pager: {
-                    nextL: '//a[contains(text(), "下一章") or contains(text(), "下一页")]',
-                    pageE: '[id="content" i], [class~="content" i], [id="chaptercontent" i], [class~="chaptercontent" i], [id="booktext" i], [id="txtcontent" i]',
-                    insertP: ['[id="content" i], [class~="content" i], [id="chaptercontent" i], [class~="chaptercontent" i], [id="booktext" i], [id="txtcontent" i]', 6],
+                    nextL: '//a[contains(text(), "下一章") or contains(text(), "下一页") or contains(text(), "下一节")]',
+                    pageE: '[id="content" i], [class~="content" i], [id="chaptercontent" i], [class~="chaptercontent" i], [id="booktext" i], [id="txtcontent" i], [id="textcontent" i], [class~="read-content" i], [class~="txtnav" i], [id="txt" i][class~="txt" i]',
+                    insertP: ['[id="content" i], [class~="content" i], [id="chaptercontent" i], [class~="chaptercontent" i], [id="booktext" i], [id="txtcontent" i], [id="textcontent" i], [class~="read-content" i], [class~="txtnav" i], [id="txt" i][class~="txt" i]', 6],
                     insertP6Br: true,
-                    replaceE: '//a[contains(text(), "下一章") or contains(text(), "下一页")]/parent::*'
+                    replaceE: '//a[contains(text(), "下一章") or contains(text(), "下一页") or contains(text(), "下一节")]/parent::*'
                 },
                 function: {
                     bF: xs_bF,
@@ -575,19 +601,29 @@ function: {
                 }
             }, //            笔趣阁 4 模板的小说网站
             yingshi: {
-                style: 'div.stui-page__all {display: none !important;}',
+                style: 'div.stui-page__all, div.myui-page__all {display: none !important;}',
                 blank: 3,
                 pager: {
-                    nextL: 'li.active.hidden-xs+li.hidden-xs>a',
-                    pageE: '.stui-vodlist',
-                    replaceE: '.stui-page, .stui-page__item',
-                    scrollD: 1000
+                    nextL: '.stui-page li.active+li>a, .stui-page__item li.active+li>a, #long-page .active+li>a, .myui-page .visible-xs+li>a',
+                    pageE: '.stui-vodlist, .myui-vodlist>li, #content, #searchList',
+                    replaceE: '.stui-page, .stui-page__item, #long-page, .myui-page, .myui-page__item'
                 },
                 function: {
                     bF: src_bF,
                     bFp: [1, '[data-original]', 'data-original']
                 }
             }, //            部分影视网站
+            yingshi2: {
+                blank: 3,
+                pager: {
+                    nextL: '#page a[title="下一页"], a.page-number.page-next',
+                    pageE: '.module-items>*',
+                    replaceE: '#page'
+                },
+                function: {
+                    bF: src_bF
+                }
+            }, //           部分影视网站 2
             meinvtu_m: {
                 history: true,
                 blank: 3,
@@ -696,8 +732,7 @@ function: {
                 pager: {
                     nextL: '.pagination li.next a[rel="next"], .topic-actions .pagination strong~a',
                     pageE: '.forumbg:not(.announcement) ul.topiclist.topics > li',
-                    replaceE: '.action-bar .pagination, .topic-actions .pagination',
-                    scrollD: 2000
+                    replaceE: '.action-bar .pagination, .topic-actions .pagination'
                 }
             }, //              phpBB 论坛 - 帖子列表
             phpbb_post: {
@@ -705,16 +740,14 @@ function: {
                 pager: {
                     nextL: '.pagination li.next a[rel="next"], .topic-actions .pagination strong~a',
                     pageE: 'div.post[id], div.post[id]+hr',
-                    replaceE: '.action-bar .pagination, .topic-actions .pagination',
-                    scrollD: 2000
+                    replaceE: '.action-bar .pagination, .topic-actions .pagination'
                 }
             }, //         phpBB 论坛 - 帖子内
             phpbb_search: {
                 pager: {
                     nextL: '.pagination li.next a[rel="next"], .topic-actions .pagination strong~a',
                     pageE: 'div.search.post',
-                    replaceE: '.action-bar .pagination, .pagination',
-                    scrollD: 2000
+                    replaceE: '.action-bar .pagination, .pagination'
                 }
             }, //       phpBB 论坛 - 搜索页
             xenforo: {
@@ -788,19 +821,28 @@ function: {
             }, //           NexusPHP 论坛
             nexusmods: {
                 host: 'www.nexusmods.com',
-                url: ()=> {urlC = true; if (!(lp == '/' || indexOF(/\/mods\/\d+/))) {curSite = DBSite.nexusmods;}},
+                url: ()=> {urlC = true; if (indexOF(/\/(mods|users)\/\d+/)) {if (indexOF('tab=posts','s')){curSite = DBSite.nexusmods_posts;} else if (indexOF('tab=user+files','s')){curSite = DBSite.nexusmods;}} else if (lp !== '/' && getCSS('.pagination a.page-selected')) {curSite = DBSite.nexusmods;}},
                 blank: 1,
                 history: false,
                 pager: {
                     nextL: nexusmods_nextL,
-                    pageE: 'ul.tiles > li',
+                    pageE: 'ul.tiles>li',
                     replaceE: '.pagination',
-                    scrollD: 4000
+                    scrollD: 3500
                 },
                 function: {
                     bF: nexusmods_bF
                 }
             }, //               NexusMods
+            nexusmods_posts: {
+                history: false,
+                pager: {
+                    nextL: nexusmods_nextL,
+                    pageE: '#comment-container>ol>li.comment:not(.comment-sticky)',
+                    replaceE: '.pagination',
+                    scrollD: 3500
+                }
+            }, //               NexusMods posts
             bilibili_search: {
                 host: 'search.bilibili.com',
                 url: ()=> {
@@ -955,8 +997,7 @@ function: {
                     insertP: ['#cp_img', 3],
                     insertE: mangabz_insertE,
                     replaceE: 'p.top-title, body > .container > div:not([id])',
-                    interval: 500,
-                    scrollD: 2000
+                    interval: 500
                 }
             }, //           Mangabz 漫画
             mangabz_list: {
@@ -985,8 +1026,7 @@ function: {
                     insertP: ['#barChapter,#cp_img', 3],
                     insertE: dm5_insertE,
                     replaceE: '.view-paging > .container, .rightToolBar',
-                    interval: 500,
-                    scrollD: 2000
+                    interval: 500
                 }
             }, //               动漫屋
             xmanhua: {
@@ -1328,30 +1368,40 @@ function: {
 
     // [NexusMods] 获取下一页地址
     function nexusmods_nextL() {
-        if (getCSS('.nexus-ui-blocker')) return
+        if (getCSS('.nexus-ui-blocker') || !getCSS('.pagination a.page-selected')) return
         let modList;
-        if (indexOF('/news')) {modList = RH_NewsTabContent;} else {modList = RH_ModList;}
+        if (indexOF('/news')) {modList = RH_NewsTabContent;} else if (indexOF('/users/') && indexOF('tab=user+files','s')) {modList = RH_UserModsTab;} else if (indexOF('/mods/') && indexOF('tab=posts','s')) {modList = RH_CommentContainer;} else {modList = RH_ModList;}
         if (!modList) return
         let out_items = JSON.stringify(modList.out_items).replace(/{|}|"/g,''),
-            nextNum = getXpath('//div[contains(@class, "pagenav")][1]//a[contains(@class, "page-selected")]/parent::li/following-sibling::li/a'),
-            categories = modList.out_items.categories, categoriesUrl = '';
+            nextNum = getXpath('//div[contains(@class, "pagination")][1]//a[contains(@class, "page-selected")]/parent::li/following-sibling::li[1]/a');
         var url = '';
         if (nextNum && nextNum.innerText) {
             nextNum = nextNum.innerText;
-            if (out_items.indexOf('page:') > -1) {
-                out_items = out_items.replace(/page:\d+/, `page:${nextNum}`)
-            } else {
-                out_items += `,page:${nextNum}`;
+            if (out_items.indexOf('page:') > -1) {out_items = out_items.replace(/page:\d+/, `page:${nextNum}`);} else {out_items += `,page:${nextNum}`;}
+            if (!indexOF(/\/(mods|users)\/\d+/)) { // MOD 页/用户页 不需要这些
+                let categories = modList.out_items.categories, tags_yes = modList.out_items.tags_yes, search = modList.out_items.search, out_items_sub = '';
+                if (categories && categories != []) { // 分类页
+                    if (modList.out_items.categories instanceof Array) {// 单独使用时为数组
+                        for (let i = 0; i < categories.length; i++) {out_items_sub += `categories[]:${categories[i]},`;}
+                    } else {
+                        for (let key in modList.out_items.categories) {out_items_sub += `categories[${key}]:${modList.out_items.categories[key]},`;}
+                    }
+                    if (out_items.indexOf('categories:') > -1) out_items = out_items.replace('categories:', out_items_sub)
+                }; out_items_sub='';
+                if (tags_yes && tags_yes != []) { // 标签页
+                    if (modList.out_items.tags_yes instanceof Array) {// 单独使用时为数组
+                        for (let i = 0; i < tags_yes.length; i++) {out_items_sub += `tags_yes[]:${tags_yes[i]},`;}
+                    } else {
+                        for (let key in modList.out_items.tags_yes) {out_items_sub += `tags_yes[${key}]:${modList.out_items.tags_yes[key]},`;}
+                    }
+                    if (out_items.indexOf('tags_yes:') > -1) out_items = out_items.replace('tags_yes:', out_items_sub)
+                }; out_items_sub='';
+                if (search && search.length != 0) { // 搜索页
+                    for (let key in modList.out_items.search) {out_items_sub += `search[${key}]:${modList.out_items.search[key]},`;}
+                    if (out_items.indexOf('search:') > -1) out_items = out_items.replace('search:',out_items_sub)
+                }; out_items_sub='';
             }
-            if (categories && categories != []) {
-                for (let i = 0; i < categories.length; i++) {
-                    categoriesUrl += `,categories[]:${categories[i]}`
-                }
-                categoriesUrl = categoriesUrl.replace(/,/,'');
-                if (out_items.indexOf('categories:') > -1) {
-                    out_items = out_items.replace(/categories:\[.*\]/, categoriesUrl)
-                }
-            }
+            //console.log(`https://www.nexusmods.com${modList.uri}?RH_${modList.id}=${out_items}`)
             return `https://www.nexusmods.com${modList.uri}?RH_${modList.id}=${out_items}`
         }
         return ''
@@ -1841,7 +1891,7 @@ function: {
                     //console.log('URL：' + url, '最终 URL：' + response.finalUrl, '返回内容：' + response.responseText)
                     processElems(createDocumentByString(response.responseText));
                 } catch (e) {
-                    console.error('[自动无缝翻页] - 处理获取到的下一页内容时出现问题，请检查！', e);
+                    console.error('[自动无缝翻页] - 处理获取到的下一页内容时出现问题，请检查！', e, response.responseText);
                 }
             },
             onerror: function (response) {
@@ -1916,13 +1966,10 @@ function: {
 
         // 创建 iframe
         let iframe = document.createElement('iframe');
-        if (location.hostname == 'www.cocomanga.com') {
-            iframe.style = 'position: absolute; width: 100%; height: 100%; border: none;';
-        } else {
-            iframe.style = 'position: absolute !important; width: 100% !important; height: 100% !important; border: none !important;';
-        }
         iframe.id = 'Autopage_iframe';
         iframe.src = src.replace(/#.+$/,'');
+
+        document.documentElement.appendChild(document.createElement('style')).textContent = 'iframe#Autopage_iframe {position: absolute !important; width: 100% !important; height: 100% !important; border: none !important;}';
 
         var beforeScrollTop = document.documentElement.scrollTop || document.body.scrollTop
         // 当滚动条到底部时（即完全显示 iframe 框架），隐藏当前页面的滚动条
@@ -1943,27 +1990,31 @@ function: {
                 document.documentElement.appendChild(newStyle);
 
                 // 恢复 iframe 的滚动条
-                if (iframe.contentWindow.document.querySelector('#Autopage_iframe-scroll-hidden')) iframe.contentWindow.document.querySelector('#Autopage_iframe-scroll-hidden').remove();
+                if (iframe.contentWindow.document.querySelectorAll('#Autopage_iframe-scroll-hidden')) iframe.contentWindow.document.querySelectorAll('#Autopage_iframe-scroll-hidden').forEach((o)=>{o.remove();});
 
                 // 给予 iframe 焦点
                 iframe.focus();
                 if (iframe.contentWindow.document.body) {iframe.contentWindow.document.body.focus(); iframe.contentWindow.document.body.click();}
             } else if (delta < 0 && scrollTop + clientHeight + 10 <= scrollHeight && getCSS('#Autopage_iframe-scroll')) {
                 getCSS('#Autopage_iframe-scroll').remove();
-
                 // 再次禁用 iframe 的滚动条
-                let newStyle = document.createElement('style'); newStyle.id = 'Autopage_iframe-scroll-hidden';
-                newStyle.textContent = 'html, body {overflow: hidden !important;}';
-                iframe.contentWindow.document.documentElement.appendChild(newStyle);
+                if (!iframe.contentWindow.document.getElementById('Autopage_iframe-scroll-hidden')) {
+                    let newStyle = document.createElement('style'); newStyle.id = 'Autopage_iframe-scroll-hidden';
+                    newStyle.textContent = 'html, body {overflow: hidden !important;}';
+                    iframe.contentWindow.document.documentElement.appendChild(newStyle);
+                }
             }
         }, false);
 
         // 加载完成后才继续
         iframe.onload = function() {
             // 暂时禁用 iframe 的滚动条
-            let newStyle = document.createElement('style'); newStyle.id = 'Autopage_iframe-scroll-hidden';
-            newStyle.textContent = 'html, body {overflow: hidden !important;}';
-            iframe.contentWindow.document.documentElement.appendChild(newStyle);
+            if (!getCSS('#Autopage_iframe-scroll') && !iframe.contentWindow.document.getElementById('Autopage_iframe-scroll-hidden')) {
+
+                let newStyle = document.createElement('style'); newStyle.id = 'Autopage_iframe-scroll-hidden';
+                newStyle.textContent = 'html, body {overflow: hidden !important;}';
+                iframe.contentWindow.document.documentElement.appendChild(newStyle);
+            }
 
             // 添加历史记录
             if (curSite.history === undefined) {
@@ -1996,10 +2047,11 @@ function: {
         let iframe = document.getElementById('Autopage_iframe');
         if (!iframe) {
             iframe = document.createElement('iframe');
-            iframe.style = 'position: absolute !important; top: -9999px !important; left: -9999px !important; width: 100% !important; height: 100% !important; border: none !important; z-index: -999 !important;';
             //iframe.sandbox = 'allow-same-origin allow-scripts allow-popups allow-forms';
             iframe.id = 'Autopage_iframe';
             iframe.src = src.replace(/#.+$/,'');
+
+            document.documentElement.appendChild(document.createElement('style')).textContent = 'iframe#Autopage_iframe {position: absolute !important; top: -9999px !important; left: -9999px !important; width: 100% !important; height: 100% !important; border: none !important; z-index: -999 !important;}';
         }
 
         // 加载完成后才继续
@@ -2315,7 +2367,7 @@ function: {
                 curSite.pageUrl = tempUrl;
                 func(curSite.pageUrl);
             } catch (e) {
-                console.error('[自动无缝翻页] - 当前网页规则 "nextL" 内 JS 代码有误，请检查！', e);
+                console.error('[自动无缝翻页] - 当前网页规则 "nextL" 内 JS 代码有误，请检查！', e, curSite.pager.nextL);
             }
         } else if (getNextE()) {
             func(curSite.pageUrl);
@@ -2331,7 +2383,7 @@ function: {
                 oE[i].outerHTML = rE[i].outerHTML;
             }
             return true
-        }
+        } else {console.log(pageE,oE,rE)}
         return false
     }
     // 添加历史记录
@@ -2443,7 +2495,7 @@ function: {
                 for (var a, o = { TITLE: !0, META: !0, LINK: !0, STYLE: !0, BASE: !0}, i = t.body, s = i.childNodes, c = s.length - 1; c >= 0; c--) o[(a = s[c]).nodeName] && i.removeChild(a);
                 return t;
             }
-        } else console.error('没有找到要转成 DOM 的字符串');
+        } else console.error('没有找到要转成 DOM 的字符串', e);
     }
 
 
@@ -2575,8 +2627,12 @@ function: {
         if (curSite.pager && curSite.pager.type == 5) window.top.document.xiu_pausePage = pausePage
         document.body.addEventListener('dblclick', function () {
             if (pausePage) {GM_notification({text: `❌ 已暂停本页 [自动无缝翻页]\n    （再次双击可恢复）`, timeout: 2000});} else {GM_notification({text: `✅ 已恢复本页 [自动无缝翻页]\n    （再次双击可暂停）`, timeout: 2000});}
-            pausePage = !pausePage;
-            if (curSite.pager && curSite.pager.type == 5) window.top.document.xiu_pausePage = pausePage
+            if (getCSS('#Autopage_number')) { // 如果同时开启了左下角页码功能，则模拟点击（为了数字变成红色+斜体）
+                getCSS('#Autopage_number').click();
+            } else {
+                pausePage = !pausePage;
+                if (curSite.pager && curSite.pager.type == 5) window.top.document.xiu_pausePage = pausePage
+            }
         });
     }
     // 自定义翻页规则
@@ -2754,6 +2810,13 @@ function: {
         for (let val in DBSite) {
             DBSite[val].SiteTypeID = num = num + 1;
         }
+    }
+    // 遍历 loadMoreExclude 数组，判断是否包含域名
+    function loadMoreExclude(l) {
+        for (let i=0; i<l.length; i++) {
+            if (location.hostname.indexOf(l[i]) != -1) return false
+        }
+        return true
     }
     // 获取 Cookie
     function getCookie(name) {

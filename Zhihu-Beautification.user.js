@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         知乎美化
-// @version      1.4.9
+// @version      1.5.3
 // @author       X.I.U
 // @description  宽屏显示、暗黑模式（4种）、暗黑模式跟随浏览器、屏蔽首页活动广告、隐藏文章开头大图、调整图片最大高度、向下翻时自动隐藏顶栏
 // @match        *://www.zhihu.com/*
 // @match        *://zhuanlan.zhihu.com/*
+// @exclude      https://www.zhihu.com/signin*
 // @icon         https://static.zhihu.com/heifetz/favicon.ico
 // @grant        GM_registerMenuCommand
 // @grant        GM_unregisterMenuCommand
@@ -199,23 +200,24 @@ html[data-theme="light"] .Button--primary.Button--blue {color: #fff !important;b
             `,
             style_widescreenDisplayIndex = `/* 宽屏显示 - 首页 */
 .Topstory-mainColumn, .QuestionWaiting-mainColumn {width: inherit !important;}
-.GlobalSideBar {display: none !important;}
+.Topstory-mainColumn+div,[data-za-detail-view-path-module="RightSideBar"] {display: none !important;}
 .Topstory-container {width: ${GM_getValue('menu_widescreenDisplayWidth')}px;}
 `,
             style_widescreenDisplayQuestion = `/* 宽屏显示 - 问题页 */
 .Question-mainColumn, .ListShortcut, .QuestionWaiting-mainColumn {width: inherit !important;}
-.Question-sideColumn, .GlobalSideBar {display: none !important;}
+.Question-mainColumn+div,[data-za-detail-view-path-module="RightSideBar"], .Question-sideColumn, .GlobalSideBar {display: none !important;}
 .QuestionWaiting-mainColumn {margin-right: 0 !important;}
 .Question-main {width: ${GM_getValue('menu_widescreenDisplayWidth')}px;}
+.AuthorInfo {max-width: 100% !important;}
 `,
             style_widescreenDisplaySearch = `/* 宽屏显示 - 搜索页 */
 .SearchMain, .ContentLayout-mainColumn, .Club-mainColumn, .Post-mainColumn {width: inherit !important;}
-.SearchSideBar, .ContentLayout-sideColumn, .Card.QuestionHeaderTopicMeta, .ClubSideBar {display: none !important;}
+.SearchMain+div, .ContentLayout-sideColumn, .Card.QuestionHeaderTopicMeta, .ClubSideBar {display: none !important;}
 .Search-container, .ContentLayout, .Club-container, .Post-container {width: ${GM_getValue('menu_widescreenDisplayWidth')}px;}
 `,
             style_widescreenDisplayCollection = `/* 宽屏显示 - 收藏页 */
 .CollectionsDetailPage-mainColumn {width: inherit !important;}
-.CollectionDetailPageSideBar {display: none !important;}
+.CollectionsDetailPage-mainColumn+div, {display: none !important;}
 .CollectionsDetailPage {width: ${GM_getValue('menu_widescreenDisplayWidth')}px;}
 `,
             style_widescreenDisplayPost = `/* 宽屏显示 - 文章页 */
@@ -224,7 +226,7 @@ html[data-theme="light"] .Button--primary.Button--blue {color: #fff !important;b
 `,
             style_widescreenDisplayPeople = `/* 宽屏显示 - 用户主页 */
 .Profile-mainColumn {width: inherit !important;}
-.Profile-sideColumn {display: none !important;}
+.Profile-mainColumn+div,[data-za-module="RightSideBar"],.Profile-sideColumn {display: none !important;}
 .Profile-main, #ProfileHeader {width: ${GM_getValue('menu_widescreenDisplayWidth')}px !important;}
 `,
             style_2 = `/* 隐藏在各列表中查看文章时开头显示的大图，不影响文章、专栏页面 */
@@ -434,7 +436,7 @@ html {filter: brightness(65%) sepia(30%) !important; background-image: url();}
         }
 
         if (location.pathname === '/' || location.pathname === '/hot' || location.pathname === '/follow') style += style_index;
-        if (menu_value('menu_darkModeType') === 1 && (location.pathname.indexOf('/special/') > -1 || location.pathname.indexOf('/pub/') > -1)) style += style_darkMode_2 + 'video {filter: invert(1) !important;}';
+        if (menu_value('menu_darkMode') && menu_value('menu_darkModeType') === 1 && (location.pathname.indexOf('/special/') > -1 || location.pathname.indexOf('/pub/') > -1)) style += style_darkMode_2 + 'video {filter: invert(1) !important;}';
 
         // 宽屏显示
         if (menu_value('menu_widescreenDisplayIndex')) style += style_widescreenDisplayIndex;
